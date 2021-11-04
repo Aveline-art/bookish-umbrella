@@ -5,8 +5,9 @@ jobs:
   create_dummy_issue:
     runs-on: ubuntu-latest
     steps:
-      - name: Get the files
-        run: ls
+      - name: List files in the repository
+        run: |
+          ls
       - uses: actions/checkout@v2      
       - name: Create Issue
         uses: actions/github-script@v4
