@@ -2486,44 +2486,6 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
-/***/ 8806:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-const VERSION = "1.0.4";
-
-/**
- * @param octokit Octokit instance
- * @param options Options passed to Octokit constructor
- */
-
-function requestLog(octokit) {
-  octokit.hook.wrap("request", (request, options) => {
-    octokit.log.debug("request", options);
-    const start = Date.now();
-    const requestOptions = octokit.request.endpoint.parse(options);
-    const path = requestOptions.url.replace(options.baseUrl, "");
-    return request(options).then(response => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
-      return response;
-    }).catch(error => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
-      throw error;
-    });
-  });
-}
-requestLog.VERSION = VERSION;
-
-exports.requestLog = requestLog;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
 /***/ 1155:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -3819,31 +3781,6 @@ const request = withDefaults(endpoint.endpoint, {
 });
 
 exports.request = request;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 7321:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-var core = __nccwpck_require__(3766);
-var pluginRequestLog = __nccwpck_require__(8806);
-var pluginPaginateRest = __nccwpck_require__(2465);
-var pluginRestEndpointMethods = __nccwpck_require__(1155);
-
-const VERSION = "18.12.0";
-
-const Octokit = core.Octokit.plugin(pluginRequestLog.requestLog, pluginRestEndpointMethods.legacyRestEndpointMethods, pluginPaginateRest.paginateRest).defaults({
-  userAgent: `octokit-rest.js/${VERSION}`
-});
-
-exports.Octokit = Octokit;
 //# sourceMappingURL=index.js.map
 
 
@@ -8508,15 +8445,18 @@ var __webpack_exports__ = {};
 // Imports
 const core = __nccwpck_require__(4550);
 const github = __nccwpck_require__(1805);
-const { Octokit } = __nccwpck_require__(7321);
 
 // Globals
 const nameToGreet = core.getInput('who-to-greet'); // `who-to-greet` input defined in action metadata file
 const payload = JSON.stringify(github.context.payload, undefined, 2) // Get the JSON webhook payload for the event that triggered the workflow
+const octokit = github.getOctokit(myToken)
+const job = JSON.stringify(github.contextb)
 
 function main() {
   try {
     console.log(`Hello ${nameToGreet}!`);
+
+    console.log(`this is the context ${job}`)
 
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);

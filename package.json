@@ -19,7 +19,6 @@
   "homepage": "https://github.com/Aveline-art/bookish-umbrella#readme",
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "@actions/github": "^5.0.0",
-    "@octokit/rest": "^18.12.0"
+    "@actions/github": "^5.0.0"
   }
 }
