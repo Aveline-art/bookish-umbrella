@@ -5,15 +5,15 @@ const github = require('@actions/github');
 // Globals
 //const myToken = core.getInput('myToken');
 //const octokit = github.getOctokit(myToken)
-const nameToGreet = core.getInput('who-to-greet'); // `who-to-greet` input defined in action metadata file
-const payload = JSON.stringify(github.context.payload, undefined, 2) // Get the JSON webhook payload for the event that triggered the workflow
-const job = JSON.stringify(github.context)
+const nameToGreet = core.getInput('who-to-greet');
+const payload = JSON.stringify(github.context.payload, undefined, 2)
+const eventName = JSON.stringify(github.context.eventName)
 
 function main() {
   try {
     console.log(`Hello ${nameToGreet}!`);
 
-    console.log(`this is the context ${job}`)
+    console.log(`this is the eventname ${eventName}`)
 
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
