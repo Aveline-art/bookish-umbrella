@@ -5,12 +5,14 @@ jobs:
   create_dummy_issue:
     runs-on: ubuntu-latest
     steps:
+      - name: Get the files
+        run: ls
       - uses: actions/checkout@v2      
       - name: Create Issue
         uses: actions/github-script@v4
         with:
           script: |
-            const script = require('./../.github/github-actions/workflow-dispatch-trigger/create-issue.js') 
+            const script = require('./.github/github-actions/workflow-dispatch-trigger/create-issue.js') 
             script({g: github, c: context})
 
 
@@ -22,5 +24,5 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const script = require('./../.github/github-actions/workflow-dispatch-trigger/create-pr.js') 
+            const script = require('./.github/github-actions/workflow-dispatch-trigger/create-pr.js') 
             script({g: github, c: context})
