@@ -1,0 +1,31 @@
+name: Workflow Dispatch Trigger
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_dummy_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2      
+      - name: Create Issue
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const script = require('./github-actions/workflow-dispatch-trigger/create-issue.js') 
+            const checkLabels = script({g: github, c: context})    
+            return checkLabels
+
+
+  create_dummy_pr:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - name: Hello world action step
+        id: hello
+        uses: Aveline-art/bookish-umbrella@v1.0.0
+        with:
+          who-to-greet: 'Mona the Octocat'
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
