@@ -1,7 +1,5 @@
 name: Workflow Dispatch Trigger
-on:
-  issues:
-    types: [opened]
+on: workflow_dispatch
 
 jobs:
   create_dummy_issue:
