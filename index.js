@@ -11,14 +11,14 @@ const eventName = JSON.stringify(github.context.eventName)
 
 function main() {
   try {
-    console.log(`Hello ${nameToGreet}!`);
-
-    console.log(`this is the eventname ${eventName}`)
+    if (eventName == 'issues') {
+      // Do something
+    } else if (eventName == 'pull_request') {
+      // Do something else
+    }
 
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
-
-    console.log(`The event payload: ${payload}`);
   } catch (error) {
     core.setFailed(error.message);
   }
