@@ -6,10 +6,13 @@ const { Octokit } = require("@octokit/rest");
 // Globals
 const nameToGreet = core.getInput('who-to-greet'); // `who-to-greet` input defined in action metadata file
 const payload = JSON.stringify(github.context.payload, undefined, 2) // Get the JSON webhook payload for the event that triggered the workflow
+const job = JSON.stringify(github.context.job)
 
 function main() {
   try {
     console.log(`Hello ${nameToGreet}!`);
+
+    console.log(`this is the job ${job}`)
 
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
