@@ -2,3 +2,4 @@
 node_modules/
 note.txt
 test.py
+*.bat

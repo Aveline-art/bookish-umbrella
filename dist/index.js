@@ -8447,10 +8447,11 @@ const core = __nccwpck_require__(4550);
 const github = __nccwpck_require__(1805);
 
 // Globals
+//const myToken = core.getInput('myToken');
+//const octokit = github.getOctokit(myToken)
 const nameToGreet = core.getInput('who-to-greet'); // `who-to-greet` input defined in action metadata file
 const payload = JSON.stringify(github.context.payload, undefined, 2) // Get the JSON webhook payload for the event that triggered the workflow
-const octokit = github.getOctokit(myToken)
-const job = JSON.stringify(github.contextb)
+const job = JSON.stringify(github.context)
 
 function main() {
   try {
