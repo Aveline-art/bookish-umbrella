@@ -3,26 +3,11 @@
 // Globals
 DELIMITERS = Array.from(' \n\t\r')
 STRINGCHAR = Array.from('"\'')
-SYMBOLCHAR = Array.from('()"')
-
-// Notes
-// Lexing -> tokenization step
-// Parsing -> creating the syntax tree, 
-
-/* Example
-   +
-  / \
- 1   +
-    / \
-   2   3
-*/
-
-// Semantic analysis -> kinda like parsing, except adds error checking
-// Intermediate representation -> 
+SYMBOLCHAR = Array.from('()[]{}')
 
 function main(s, arr) {
-    const interpreter = new Interpreter('bad or and horrible')
-    const analyzer = new Analyzer(interpreter.tokenize(), ['bad', 'horrible', 'disaster'])
+    const interpreter = new Interpreter('bad or "disaster and horrible"')
+    const analyzer = new Analyzer(interpreter.tokenize(), ['disaster and horrible', 'horrible'])
     console.log('answer', analyzer.analyze())
 }
 
@@ -82,9 +67,9 @@ class Analyzer {
             'not': (context) => this.#not.bind(context),
         }
         this.parens = {
-            '(': (context) => this.#parenthesis.bind(context),
-            '\'': (context) => this.#parenthesis.bind(context),
-            '"': (context) => this.#parenthesis.bind(context),
+            '(': ')',
+            '[': ']',
+            '{': '}',
         }
     }
 
@@ -105,7 +90,9 @@ class Analyzer {
             const result = builtin(this)(src, last)
             return result
         } else if (parens) {
-            const result = parens(this)(src, last)
+            const subSrc = this.#findCloseParen(this.parens[first], src)
+            const result = subSrc.length ? this.#analyze(subSrc) : false
+            return this.#analyze(src, result)
             // TODO take everything utill reachin the close parens
         } else {
             const result = this.#sentence(first)
@@ -117,10 +104,6 @@ class Analyzer {
         return this.arr.includes(val)
     }
 
-    #parenthesis(src, last) {
-        // TODO
-    }
-
     #and(src, last) {
         console.log('and', src, last)
         if (last === null) {
@@ -130,7 +113,14 @@ class Analyzer {
         if (last === true) {
             return this.#analyze(src)
         } else if (last === false) {
-            src.shift() // TODO, what if this is a parenthesis? We must drop tokens until we reach the end or what if the next thing would have thrown a syntax error?
+            const first = src.shift()
+            const builtin = this.builtins[first]
+            const parens = this.parens[first]
+            if (builtin) {
+                throw new SyntaxError()
+            } else if (parens) {
+                this.#findCloseParen(parens, src)
+            }
             return this.#analyze(src, last)
         }
     }
@@ -142,7 +132,14 @@ class Analyzer {
         }
 
         if (last === true) {
-            src.shift()
+            const first = src.shift()
+            const builtin = this.builtins[first]
+            const parens = this.parens[first]
+            if (builtin) {
+                throw new SyntaxError()
+            } else if (parens) {
+                this.#findCloseParen(parens, src)
+            }
             return this.#analyze(src, last)
         } else if (last === false) {
             return this.#analyze(src)
@@ -150,7 +147,18 @@ class Analyzer {
     }
 
     #not(src) {
-        return this.#analyze()
+        console.log('not', src)
+        return !this.#analyze(src)
+    }
+
+    #findCloseParen(closeParen, src, store=[]) {
+        const first = src.shift()
+        if (first == closeParen) {
+            return store
+        } else {
+            store.push(first)
+            return this.#findCloseParen(closeParen, src, store)
+        }
     }
 }
 
