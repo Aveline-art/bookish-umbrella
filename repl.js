@@ -5,9 +5,11 @@ DELIMITERS = Array.from(' \n\t\r')
 STRINGCHAR = Array.from('"\'')
 SYMBOLCHAR = Array.from('()[]{}')
 
+
+// main function
 function main(s, arr) {
-    const interpreter = new Interpreter('bad or "disaster and horrible"')
-    const analyzer = new Analyzer(interpreter.tokenize(), ['disaster and horrible', 'horrible'])
+    const interpreter = new Interpreter('not')
+    const analyzer = new Analyzer(interpreter.tokenize(), ['disaster', 'bad'])
     console.log('answer', analyzer.analyze())
 }
 
@@ -81,7 +83,11 @@ class Analyzer {
     #analyze(src, last = null) {
         console.log('analysis', src, last)
         if (src.length <= 0) {
-            return last
+            if (last === true || last === false) {
+                return last
+            } else {
+                throw new SyntaxError()
+            }
         }
         const first = src.shift()
         const builtin = this.builtins[first]
@@ -93,7 +99,6 @@ class Analyzer {
             const subSrc = this.#findCloseParen(this.parens[first], src)
             const result = subSrc.length ? this.#analyze(subSrc) : false
             return this.#analyze(src, result)
-            // TODO take everything utill reachin the close parens
         } else {
             const result = this.#sentence(first)
             return this.#analyze(src, result)
@@ -106,9 +111,6 @@ class Analyzer {
 
     #and(src, last) {
         console.log('and', src, last)
-        if (last === null) {
-            throw new SyntaxError()
-        }
 
         if (last === true) {
             return this.#analyze(src)
@@ -117,17 +119,19 @@ class Analyzer {
             const builtin = this.builtins[first]
             const parens = this.parens[first]
             if (builtin) {
-                throw new SyntaxError()
+                builtin(this)(src, last)
             } else if (parens) {
                 this.#findCloseParen(parens, src)
             }
             return this.#analyze(src, last)
+        } else {
+            throw new SyntaxError()
         }
     }
 
     #or(src, last) {
         console.log('or', src, last)
-        if (last === null) {
+        if (last !== true && last !== false) {
             throw new SyntaxError()
         }
 
@@ -136,13 +140,15 @@ class Analyzer {
             const builtin = this.builtins[first]
             const parens = this.parens[first]
             if (builtin) {
-                throw new SyntaxError()
+                builtin(this)(src, last)
             } else if (parens) {
                 this.#findCloseParen(parens, src)
             }
             return this.#analyze(src, last)
         } else if (last === false) {
             return this.#analyze(src)
+        } else {
+            throw new SyntaxError()
         }
     }
 
@@ -179,6 +185,6 @@ class SyntaxError extends Error {
     }
 }
 
-main()
+//main()
 
-module.exports = { main, Interpreter }
+module.exports = { main, Analyzer, Interpreter }
