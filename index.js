@@ -1,7 +1,7 @@
 // Imports
 const core = require('@actions/core');
 const github = require('@actions/github');
-//const repl = require('./repl');
+const repl = require('./repl');
 
 // Globals
 const myToken = core.getInput('myToken');
