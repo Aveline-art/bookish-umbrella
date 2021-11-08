@@ -21,18 +21,18 @@ function main() {
       const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
-      console.log('labels', labels)
-      console.log('issueLabels', issueLabels)
-      console.log('message', message)
+      if (repl.analyze(labels, issueLabels)) {
+        console.log('message', message)
+      }
         // API call
       
     } else if (eventName == '"pull_request"') {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
       })
-      console.log('labels', labels)
-      console.log('issueLabels', prLabels)
-      console.log('message', message)
+      if (repl.analyze(labels, prLabels)) {
+        console.log('message', message)
+      }
         // API call
       
     }
