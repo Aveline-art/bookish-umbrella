@@ -10,9 +10,6 @@ inputs:
   message:  # id of input
     description: 'Comment to post if conditions are met'
     required: true
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
 runs:
   using: 'node12'
   main: 'dist/index.js'

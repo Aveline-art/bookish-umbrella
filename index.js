@@ -16,7 +16,7 @@ const eventName = github.context.eventName
 // TODO, if no label string is provided, the check is skipped
 function main() {
   try {
-    if (eventName == 'issues') {
+    if (eventName == 'issues' || !labels) {
       const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
@@ -28,13 +28,10 @@ function main() {
           body: message,
         });
       }
-    } else if (eventName == 'pull_request') {
+    } else if (eventName == 'pull_request'  || !labels) {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
       })
-      console.log('labels', labels)
-      console.log('prlabels', prLabels)
-      console.log('analyze', repl.analyze(labels, prLabels))
       if (repl.analyze(labels, prLabels)) {
         octokit.rest.issues.createComment({
           owner: payload.repository.owner.login,
@@ -43,12 +40,7 @@ function main() {
           body: message,
         });
       }
-        // API call
-      
     }
-
-    const time = (new Date()).toTimeString();
-    core.setOutput("time", time);
   } catch (error) {
     core.setFailed(error.message);
   }
