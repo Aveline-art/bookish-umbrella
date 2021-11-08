@@ -1,20 +1,37 @@
 // Imports
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { Octokit } = require("@octokit/rest");
+const repl = require('./repl');
 
 // Globals
-const nameToGreet = core.getInput('who-to-greet'); // `who-to-greet` input defined in action metadata file
-const payload = JSON.stringify(github.context.payload, undefined, 2) // Get the JSON webhook payload for the event that triggered the workflow
+const myToken = core.getInput('myToken');
+const labels = core.getInput('labels')
+const message = core.getInput('message')
 
+const octokit = github.getOctokit(myToken)
+const payload = JSON.stringify(github.context.payload, undefined, 2)
+const eventName = JSON.stringify(github.context.eventName)
+
+
+// TODO, if no label string is provided, the check is skipped
 function main() {
   try {
-    console.log(`Hello ${nameToGreet}!`);
+    if (eventName == 'issues') {
+      const issueLabels = payload.issue.labels
+      if (repl.analyze(labels, issueLabels)) {
+        console.log(message)
+        // API call
+      }
+    } else if (eventName == 'pull_request') {
+      const prLabels = payload.issue.labels
+      if (repl.analyze(labels, prLabels)) {
+        console.log(message)
+        // API call
+      }
+    }
 
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
-
-    console.log(`The event payload: ${payload}`);
   } catch (error) {
     core.setFailed(error.message);
   }

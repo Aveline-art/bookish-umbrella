@@ -1,13 +1,21 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  myToken:  # id of input
+    description: 'A valid API token scoped to post comments on the repo'
     required: true
-    default: 'World'
+  labels:  # id of input
+    description: 'Labels to verify; please see docs for wording logic'
+    required: false
+  message:  # id of input
+    description: 'Comment to post if conditions are met'
+    required: true
 outputs:
   time: # id of output
     description: 'The time we greeted you'
 runs:
   using: 'node12'
   main: 'dist/index.js'
+branding:
+  icon: 'feather'  
+  color: 'purple'

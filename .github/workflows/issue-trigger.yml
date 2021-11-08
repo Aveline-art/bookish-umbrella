@@ -1,7 +1,7 @@
 name: Issue Trigger
 on:
   issues:
-    types: [opened, edited, deleted, transferred, pinned, unpinned, closed, reopened, assigned, unassigned, labeled, unlabeled, locked, unlocked, milestoned]
+    types: [opened]
 
 jobs:
   test_bookish_umbrella:
@@ -10,9 +10,11 @@ jobs:
     steps:
       - name: Hello world action step
         id: hello
-        uses: Aveline-art/bookish-umbrella@v1.0.0
+        uses: Aveline-art/bookish-umbrella@main
         with:
-          who-to-greet: 'Mona the Octocat'
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+          labels: (dependency)
+          message: 'This is an issue message'
       # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"

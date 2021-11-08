@@ -2486,44 +2486,6 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
-/***/ 8806:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-const VERSION = "1.0.4";
-
-/**
- * @param octokit Octokit instance
- * @param options Options passed to Octokit constructor
- */
-
-function requestLog(octokit) {
-  octokit.hook.wrap("request", (request, options) => {
-    octokit.log.debug("request", options);
-    const start = Date.now();
-    const requestOptions = octokit.request.endpoint.parse(options);
-    const path = requestOptions.url.replace(options.baseUrl, "");
-    return request(options).then(response => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
-      return response;
-    }).catch(error => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
-      throw error;
-    });
-  });
-}
-requestLog.VERSION = VERSION;
-
-exports.requestLog = requestLog;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
 /***/ 1155:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -3819,31 +3781,6 @@ const request = withDefaults(endpoint.endpoint, {
 });
 
 exports.request = request;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 7321:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-var core = __nccwpck_require__(3766);
-var pluginRequestLog = __nccwpck_require__(8806);
-var pluginPaginateRest = __nccwpck_require__(2465);
-var pluginRestEndpointMethods = __nccwpck_require__(1155);
-
-const VERSION = "18.12.0";
-
-const Octokit = core.Octokit.plugin(pluginRequestLog.requestLog, pluginRestEndpointMethods.legacyRestEndpointMethods, pluginPaginateRest.paginateRest).defaults({
-  userAgent: `octokit-rest.js/${VERSION}`
-});
-
-exports.Octokit = Octokit;
 //# sourceMappingURL=index.js.map
 
 
@@ -8336,6 +8273,206 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 2386:
+/***/ ((module) => {
+
+// Imports
+
+// Globals
+DELIMITERS = Array.from(' \n\t\r')
+STRINGCHAR = Array.from('"\'')
+SYMBOLCHAR = Array.from('()[]{},/!')
+
+
+// main function
+function analyze(s, arr) {
+    const interpreter = new Interpreter(s)
+    const analyzer = new Analyzer(interpreter.tokenize(), arr)
+    //console.log('answer', analyzer.analyze())
+    return analyzer.analyze()
+}
+
+
+class Interpreter {
+    constructor(src) {
+        this.src = src
+    }
+
+    tokenize() {
+        return this.#tokenize(this.src.split(''))
+    }
+
+    #tokenize(src, store = []) {
+        if (src.length <= 0) {
+            return store
+        } else {
+            const next = this.#findNextToken(src)
+            store.push(next)
+            return this.#tokenize(src, store)
+        }
+    }
+
+    #findNextToken(src, store = []) {
+        if (src.length <= 0) {
+            return store.join('')
+        }
+
+        const first = src[0]
+        if (DELIMITERS.includes(first)) {
+            src.shift()
+            return store.join('') || this.#findNextToken(src, store)
+        } else if (STRINGCHAR.includes(first)) {
+            const stopChar = src.shift()
+            var nextChar = src.shift()
+            while (nextChar != stopChar) {
+                store.push(nextChar)
+                nextChar = src.shift()
+            }
+            return store.join('')
+        } else if (SYMBOLCHAR.includes(first)) {
+            return store.join('') || src.shift()
+        } else if (!SYMBOLCHAR.includes(first)) {
+            store.push(src.shift())
+        }
+        return this.#findNextToken(src, store)
+    }
+}
+
+class Analyzer {
+    constructor(tokens, arr) {
+        this.tokens = tokens
+        this.arr = arr
+        this.builtins = {
+            'and': (context) => this.#and.bind(context),
+            'or': (context) => this.#or.bind(context),
+            'not': (context) => this.#not.bind(context),
+            ',': (context) => this.#and.bind(context),
+            '/': (context) => this.#or.bind(context),
+            '!': (context) => this.#not.bind(context),
+        }
+        this.parens = {
+            '(': ')',
+            '[': ']',
+            '{': '}',
+        }
+    }
+
+    analyze() {
+        const src = [...this.tokens]
+        return this.#analyze(src)
+    }
+
+    #analyze(src, last = null) {
+        //console.log('analysis', src, last)
+        if (src.length <= 0) {
+            if (last === true || last === false) {
+                return last
+            } else {
+                throw new SyntaxError()
+            }
+        }
+        const first = src.shift()
+        const builtin = this.builtins[first]
+        const parens = this.parens[first]
+        if (builtin) {
+            const result = builtin(this)(src, last)
+            return result
+        } else if (parens) {
+            const subSrc = this.#findCloseParen(this.parens[first], src)
+            const result = subSrc.length ? this.#analyze(subSrc) : false
+            return this.#analyze(src, result)
+        } else {
+            const result = this.#sentence(first)
+            return this.#analyze(src, result)
+        }
+    }
+
+    #sentence(val) {
+        return this.arr.includes(val)
+    }
+
+    #and(src, last) {
+        //console.log('and', src, last)
+
+        if (last === true) {
+            return this.#analyze(src)
+        } else if (last === false) {
+            const first = src.shift()
+            const builtin = this.builtins[first]
+            const parens = this.parens[first]
+            if (builtin) {
+                builtin(this)(src, last)
+            } else if (parens) {
+                this.#findCloseParen(parens, src)
+            }
+            return this.#analyze(src, last)
+        } else {
+            throw new SyntaxError()
+        }
+    }
+
+    #or(src, last) {
+        //console.log('or', src, last)
+        if (last !== true && last !== false) {
+            throw new SyntaxError()
+        }
+
+        if (last === true) {
+            const first = src.shift()
+            const builtin = this.builtins[first]
+            const parens = this.parens[first]
+            if (builtin) {
+                builtin(this)(src, last)
+            } else if (parens) {
+                this.#findCloseParen(parens, src)
+            }
+            return this.#analyze(src, last)
+        } else if (last === false) {
+            return this.#analyze(src)
+        } else {
+            throw new SyntaxError()
+        }
+    }
+
+    #not(src) {
+        //console.log('not', src)
+        return !this.#analyze(src)
+    }
+
+    #findCloseParen(closeParen, src, store=[]) {
+        const first = src.shift()
+        if (first == closeParen) {
+            return store
+        } else {
+            store.push(first)
+            return this.#findCloseParen(closeParen, src, store)
+        }
+    }
+}
+
+class SyntaxError extends Error {
+    constructor(foo = 'bar', ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params)
+
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, SyntaxError)
+        }
+
+        this.name = 'SyntaxError'
+        // Custom debugging information
+        this.foo = foo
+        this.date = new Date()
+    }
+}
+
+//main()
+
+module.exports = { analyze, Analyzer, Interpreter }
+
+/***/ }),
+
 /***/ 1690:
 /***/ ((module) => {
 
@@ -8508,20 +8645,37 @@ var __webpack_exports__ = {};
 // Imports
 const core = __nccwpck_require__(4550);
 const github = __nccwpck_require__(1805);
-const { Octokit } = __nccwpck_require__(7321);
+const repl = __nccwpck_require__(2386);
 
 // Globals
-const nameToGreet = core.getInput('who-to-greet'); // `who-to-greet` input defined in action metadata file
-const payload = JSON.stringify(github.context.payload, undefined, 2) // Get the JSON webhook payload for the event that triggered the workflow
+const myToken = core.getInput('myToken');
+const labels = core.getInput('labels')
+const message = core.getInput('message')
 
+const octokit = github.getOctokit(myToken)
+const payload = JSON.stringify(github.context.payload, undefined, 2)
+const eventName = JSON.stringify(github.context.eventName)
+
+
+// TODO, if no label string is provided, the check is skipped
 function main() {
   try {
-    console.log(`Hello ${nameToGreet}!`);
+    if (eventName == 'issues') {
+      const issueLabels = payload.issue.labels
+      if (repl.analyze(labels, issueLabels)) {
+        console.log(message)
+        // API call
+      }
+    } else if (eventName == 'pull_request') {
+      const prLabels = payload.issue.labels
+      if (repl.analyze(labels, prLabels)) {
+        console.log(message)
+        // API call
+      }
+    }
 
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
-
-    console.log(`The event payload: ${payload}`);
   } catch (error) {
     core.setFailed(error.message);
   }

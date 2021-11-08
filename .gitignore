@@ -1,4 +1,7 @@
 
 node_modules/
 note.txt
+*.bat
+test.js
+apicalls.py
 test.py
