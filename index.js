@@ -4,10 +4,11 @@ const github = require('@actions/github');
 const repl = require('./repl');
 
 // Globals
-//const myToken = core.getInput('myToken');
-// TODO, find out how to get the token in the yml file
-//const octokit = github.getOctokit(myToken)
+const myToken = core.getInput('myToken');
 const labels = core.getInput('labels')
+const message = core.getInput('message')
+
+const octokit = github.getOctokit(myToken)
 const payload = JSON.stringify(github.context.payload, undefined, 2)
 const eventName = JSON.stringify(github.context.eventName)
 
@@ -18,15 +19,15 @@ function main() {
     if (eventName == 'issues') {
       const issueLabels = payload.issue.labels
       if (repl.analyze(labels, issueLabels)) {
+        console.log(message)
         // API call
       }
-      // Do something
     } else if (eventName == 'pull_request') {
       const prLabels = payload.issue.labels
       if (repl.analyze(labels, prLabels)) {
+        console.log(message)
         // API call
       }
-      // Do something else
     }
 
     const time = (new Date()).toTimeString();
