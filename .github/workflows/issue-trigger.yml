@@ -1,7 +1,7 @@
 name: Issue Trigger
 on:
   issues:
-    types: [opened, labeled]
+    types: [labeled]
 
 jobs:
   test_bookish_umbrella:
