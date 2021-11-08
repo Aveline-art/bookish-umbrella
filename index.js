@@ -36,7 +36,7 @@ function main() {
       })
       console.log('labels', labels)
       console.log('prlabels', prLabels)
-      console.log('analyze', labels, prLabels)
+      console.log('analyze', repl.analyze(labels, prLabels))
       if (repl.analyze(labels, prLabels)) {
         octokit.rest.issues.createComment({
           owner: payload.repository.owner.login,
