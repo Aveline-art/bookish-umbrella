@@ -8273,14 +8273,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 2209:
-/***/ ((module) => {
-
-module.exports = eval("require")("./repl");
-
-
-/***/ }),
-
 /***/ 1690:
 /***/ ((module) => {
 
@@ -8453,7 +8445,7 @@ var __webpack_exports__ = {};
 // Imports
 const core = __nccwpck_require__(4550);
 const github = __nccwpck_require__(1805);
-const repl = __nccwpck_require__(2209);
+//const repl = require('./repl');
 
 // Globals
 const myToken = core.getInput('myToken');
