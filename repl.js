@@ -2,7 +2,7 @@
 
 // Globals
 DELIMITERS = Array.from(' \n\t\r')
-STRINGCHAR = Array.from('"\'')
+STRINGCHAR = Array.from('`')
 SYMBOLCHAR = Array.from('()[]{},/!')
 
 

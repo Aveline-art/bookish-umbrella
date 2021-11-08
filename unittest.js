@@ -5,7 +5,7 @@ const s2 = '(bug, dependency) / (enhancement and invalid)'
 const s3 = 'not (bug and dependency)'
 const s4 = '!bug'
 const s5 = 'bug and dependency or enhancement'
-const s6 = `"good first issue" and ('invalid' or 'help wanted')`
+const s6 = '`good first issue` and (`invalid` or `help wanted`)'
 const s7 = 'dependency'
 
 const e1 = 'dependency and and bug'
