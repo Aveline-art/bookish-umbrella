@@ -8660,7 +8660,7 @@ const eventName = github.context.eventName
 // TODO, if no label string is provided, the check is skipped
 function main() {
   try {
-    if (eventName == 'issues' || !labels) {
+    if (eventName == 'issues') {
       const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
@@ -8672,7 +8672,7 @@ function main() {
           body: message,
         });
       }
-    } else if (eventName == 'pull_request'  || !labels) {
+    } else if (eventName == 'pull_request') {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
       })
