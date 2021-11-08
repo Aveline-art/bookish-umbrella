@@ -27,6 +27,7 @@ function main() {
         // API call
       
     } else if (eventName == '"pull_request"') {
+      console.log(JSON.stringify(payload))
       const prLabels = payload.issue.labels.map(label => {
         return label.name
       })
