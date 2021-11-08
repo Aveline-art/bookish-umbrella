@@ -11,18 +11,23 @@ const message = core.getInput('message')
 const octokit = github.getOctokit(myToken)
 const payload = github.context.payload
 const eventName = JSON.stringify(github.context.eventName)
+console.log('github', JSON.stringify(github))
 
 
 // TODO, if no label string is provided, the check is skipped
 function main() {
-  console.log('eventname', eventName)
   try {
     if (eventName == '"issues"') {
       const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
       if (repl.analyze(labels, issueLabels)) {
-        console.log('message', message)
+        octokit.rest.issues.createComment({
+          owner: payload.repository.owner.login,
+          repo: payload.repository.name,
+          issue_number: payload.issue.number,
+          body: message,
+        });
       }
         // API call
       
@@ -31,7 +36,12 @@ function main() {
         return label.name
       })
       if (repl.analyze(labels, prLabels)) {
-        console.log('message', message)
+        octokit.rest.issues.createComment({
+          owner: payload.repository.owner.login,
+          repo: payload.repository.name,
+          issue_number: payload.issue.number,
+          body: message,
+        });
       }
         // API call
       
