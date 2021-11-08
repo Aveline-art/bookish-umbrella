@@ -8475,7 +8475,7 @@ function main() {
         return label.name
       })
       console.log('labels', labels)
-      console.log('issueLabels', issueLabels)
+      console.log('issueLabels', prLabels)
       console.log('message', message)
         // API call
       
