@@ -5,4 +5,6 @@ note.txt
 test.js
 apicalls.py
 test.py
-test.json
+issueobj.json
+.gitignore
+probj.json

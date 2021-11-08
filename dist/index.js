@@ -8654,14 +8654,13 @@ const message = core.getInput('message')
 
 const octokit = github.getOctokit(myToken)
 const payload = github.context.payload
-const eventName = JSON.stringify(github.context.eventName)
-console.log('github', JSON.stringify(github))
+const eventName = github.context.eventName
 
 
 // TODO, if no label string is provided, the check is skipped
 function main() {
   try {
-    if (eventName == '"issues"') {
+    if (eventName == 'issues') {
       const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
@@ -8675,7 +8674,7 @@ function main() {
       }
         // API call
       
-    } else if (eventName == '"pull_request"') {
+    } else if (eventName == 'pull_request') {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
       })
@@ -8683,7 +8682,7 @@ function main() {
         octokit.rest.issues.createComment({
           owner: payload.repository.owner.login,
           repo: payload.repository.name,
-          issue_number: payload.issue.number,
+          issue_number: payload.pull_request.number,
           body: message,
         });
       }
