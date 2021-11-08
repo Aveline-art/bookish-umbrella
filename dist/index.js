@@ -8678,6 +8678,8 @@ function main() {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
       })
+      console.log('labels', labels)
+      console.log('prlabels', prLabels)
       if (repl.analyze(labels, prLabels)) {
         octokit.rest.issues.createComment({
           owner: payload.repository.owner.login,
