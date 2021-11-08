@@ -13,7 +13,7 @@ jobs:
         uses: Aveline-art/bookish-umbrella@main
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
-          labels: (dependency)
+          labels: dependency
           message: 'This is an issue message'
       # Use the output from the `hello` step
       - name: Get the output time
