@@ -10,7 +10,7 @@ SYMBOLCHAR = Array.from('()[]{}')
 function main(s, arr) {
     const interpreter = new Interpreter('not')
     const analyzer = new Analyzer(interpreter.tokenize(), ['disaster', 'bad'])
-    console.log('answer', analyzer.analyze())
+    //console.log('answer', analyzer.analyze())
 }
 
 
@@ -81,7 +81,7 @@ class Analyzer {
     }
 
     #analyze(src, last = null) {
-        console.log('analysis', src, last)
+        //console.log('analysis', src, last)
         if (src.length <= 0) {
             if (last === true || last === false) {
                 return last
@@ -110,7 +110,7 @@ class Analyzer {
     }
 
     #and(src, last) {
-        console.log('and', src, last)
+        //console.log('and', src, last)
 
         if (last === true) {
             return this.#analyze(src)
@@ -130,7 +130,7 @@ class Analyzer {
     }
 
     #or(src, last) {
-        console.log('or', src, last)
+        //console.log('or', src, last)
         if (last !== true && last !== false) {
             throw new SyntaxError()
         }
@@ -153,7 +153,7 @@ class Analyzer {
     }
 
     #not(src) {
-        console.log('not', src)
+        //console.log('not', src)
         return !this.#analyze(src)
     }
 
