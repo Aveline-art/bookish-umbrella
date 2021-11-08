@@ -2,8 +2,12 @@ name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
   labels:  # id of input
-    description: 'Semi-colon separated lists of labels to verify'
+    description: 'List of labels to verify; please see docs for wording logic'
     required: false
+    default: ''
+  message:  # id of input
+    description: 'Comment to post if conditions are met'
+    required: true
     default: ''
 outputs:
   time: # id of output
