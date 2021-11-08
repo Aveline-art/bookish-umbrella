@@ -3,14 +3,15 @@
 // Globals
 DELIMITERS = Array.from(' \n\t\r')
 STRINGCHAR = Array.from('"\'')
-SYMBOLCHAR = Array.from('()[]{}')
+SYMBOLCHAR = Array.from('()[]{},/!')
 
 
 // main function
-function main(s, arr) {
-    const interpreter = new Interpreter('not')
-    const analyzer = new Analyzer(interpreter.tokenize(), ['disaster', 'bad'])
+function analyze(s, arr) {
+    const interpreter = new Interpreter(s)
+    const analyzer = new Analyzer(interpreter.tokenize(), arr)
     //console.log('answer', analyzer.analyze())
+    return analyzer.analyze()
 }
 
 
@@ -67,6 +68,9 @@ class Analyzer {
             'and': (context) => this.#and.bind(context),
             'or': (context) => this.#or.bind(context),
             'not': (context) => this.#not.bind(context),
+            ',': (context) => this.#and.bind(context),
+            '/': (context) => this.#or.bind(context),
+            '!': (context) => this.#not.bind(context),
         }
         this.parens = {
             '(': ')',
@@ -187,4 +191,4 @@ class SyntaxError extends Error {
 
 //main()
 
-module.exports = { main, Analyzer, Interpreter }
+module.exports = { analyze, Analyzer, Interpreter }

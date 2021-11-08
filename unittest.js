@@ -1,11 +1,12 @@
 const repl = require('./repl');
 
 const s1 = 'dependency and not bug'
-const s2 = '(bug and dependency) or (enhancement and invalid)'
+const s2 = '(bug, dependency) / (enhancement and invalid)'
 const s3 = 'not (bug and dependency)'
-const s4 = 'not bug'
+const s4 = '!bug'
 const s5 = 'bug and dependency or enhancement'
 const s6 = `"good first issue" and ('invalid' or 'help wanted')`
+const s7 = 'dependency'
 
 const e1 = 'dependency and and bug'
 const e2 = '((bug and dependency) or (enhancement and invalide)'
@@ -18,6 +19,7 @@ const a3 = ['enhancement']
 const a4 = ['enhancement', 'invalid']
 const a5 = ['enhancement']
 const a6 = ['good first issue']
+const a7 = ['']
 
 function tests() {
     test(() => testInterpreter(s1), ['dependency', 'and', 'not', 'bug'])
@@ -38,6 +40,7 @@ function tests() {
     test(() => testAnalyzer(s4, a4), true)
     test(() => testAnalyzer(s5, a5), true)
     test(() => testAnalyzer(s6, a6), false)
+    test(() => testAnalyzer(s7, a7), false)
 
     test(() => testAnalyzer(e1, a1), 'error')
     test(() => testAnalyzer(e2, a1), 'error')
