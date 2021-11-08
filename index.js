@@ -18,7 +18,7 @@ function main() {
   console.log('eventname', eventName)
   try {
     if (eventName == '"issues"') {
-      const issueLabels = payload.issue.labels.filter(label => {
+      const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
       console.log('labels', labels)
@@ -27,7 +27,7 @@ function main() {
         // API call
       
     } else if (eventName == '"pull_request"') {
-      const prLabels = payload.issue.labels.filter(label => {
+      const prLabels = payload.issue.labels.map(label => {
         return label.name
       })
       console.log('labels', labels)
