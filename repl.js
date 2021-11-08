@@ -21,20 +21,20 @@ class Interpreter {
     }
 
     tokenize() {
-        return this.#tokenize(this.src.split(''))
+        return this._tokenize(this.src.split(''))
     }
 
-    #tokenize(src, store = []) {
+    _tokenize(src, store = []) {
         if (src.length <= 0) {
             return store
         } else {
-            const next = this.#findNextToken(src)
+            const next = this._findNextToken(src)
             store.push(next)
-            return this.#tokenize(src, store)
+            return this._tokenize(src, store)
         }
     }
 
-    #findNextToken(src, store = []) {
+    _findNextToken(src, store = []) {
         if (src.length <= 0) {
             return store.join('')
         }
@@ -42,7 +42,7 @@ class Interpreter {
         const first = src[0]
         if (DELIMITERS.includes(first)) {
             src.shift()
-            return store.join('') || this.#findNextToken(src, store)
+            return store.join('') || this._findNextToken(src, store)
         } else if (STRINGCHAR.includes(first)) {
             const stopChar = src.shift()
             var nextChar = src.shift()
@@ -56,7 +56,7 @@ class Interpreter {
         } else if (!SYMBOLCHAR.includes(first)) {
             store.push(src.shift())
         }
-        return this.#findNextToken(src, store)
+        return this._findNextToken(src, store)
     }
 }
 
@@ -65,12 +65,12 @@ class Analyzer {
         this.tokens = tokens
         this.arr = arr
         this.builtins = {
-            'and': (context) => this.#and.bind(context),
-            'or': (context) => this.#or.bind(context),
-            'not': (context) => this.#not.bind(context),
-            ',': (context) => this.#and.bind(context),
-            '/': (context) => this.#or.bind(context),
-            '!': (context) => this.#not.bind(context),
+            'and': (context) => this._and.bind(context),
+            'or': (context) => this._or.bind(context),
+            'not': (context) => this._not.bind(context),
+            ',': (context) => this._and.bind(context),
+            '/': (context) => this._or.bind(context),
+            '!': (context) => this._not.bind(context),
         }
         this.parens = {
             '(': ')',
@@ -81,10 +81,10 @@ class Analyzer {
 
     analyze() {
         const src = [...this.tokens]
-        return this.#analyze(src)
+        return this._analyze(src)
     }
 
-    #analyze(src, last = null) {
+    _analyze(src, last = null) {
         //console.log('analysis', src, last)
         if (src.length <= 0) {
             if (last === true || last === false) {
@@ -100,24 +100,24 @@ class Analyzer {
             const result = builtin(this)(src, last)
             return result
         } else if (parens) {
-            const subSrc = this.#findCloseParen(this.parens[first], src)
-            const result = subSrc.length ? this.#analyze(subSrc) : false
-            return this.#analyze(src, result)
+            const subSrc = this._findCloseParen(this.parens[first], src)
+            const result = subSrc.length ? this._analyze(subSrc) : false
+            return this._analyze(src, result)
         } else {
-            const result = this.#sentence(first)
-            return this.#analyze(src, result)
+            const result = this._sentence(first)
+            return this._analyze(src, result)
         }
     }
 
-    #sentence(val) {
+    _sentence(val) {
         return this.arr.includes(val)
     }
 
-    #and(src, last) {
+    _and(src, last) {
         //console.log('and', src, last)
 
         if (last === true) {
-            return this.#analyze(src)
+            return this._analyze(src)
         } else if (last === false) {
             const first = src.shift()
             const builtin = this.builtins[first]
@@ -125,15 +125,15 @@ class Analyzer {
             if (builtin) {
                 builtin(this)(src, last)
             } else if (parens) {
-                this.#findCloseParen(parens, src)
+                this._findCloseParen(parens, src)
             }
-            return this.#analyze(src, last)
+            return this._analyze(src, last)
         } else {
             throw new SyntaxError()
         }
     }
 
-    #or(src, last) {
+    _or(src, last) {
         //console.log('or', src, last)
         if (last !== true && last !== false) {
             throw new SyntaxError()
@@ -146,28 +146,28 @@ class Analyzer {
             if (builtin) {
                 builtin(this)(src, last)
             } else if (parens) {
-                this.#findCloseParen(parens, src)
+                this._findCloseParen(parens, src)
             }
-            return this.#analyze(src, last)
+            return this._analyze(src, last)
         } else if (last === false) {
-            return this.#analyze(src)
+            return this._analyze(src)
         } else {
             throw new SyntaxError()
         }
     }
 
-    #not(src) {
+    _not(src) {
         //console.log('not', src)
-        return !this.#analyze(src)
+        return !this._analyze(src)
     }
 
-    #findCloseParen(closeParen, src, store=[]) {
+    _findCloseParen(closeParen, src, store=[]) {
         const first = src.shift()
         if (first == closeParen) {
             return store
         } else {
             store.push(first)
-            return this.#findCloseParen(closeParen, src, store)
+            return this._findCloseParen(closeParen, src, store)
         }
     }
 }
