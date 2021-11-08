@@ -13,7 +13,7 @@ jobs:
         uses: Aveline-art/bookish-umbrella@main
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
-          labels: "good first issue"
+          labels: "'good first issue'"
           message: 'This is a pr message'
       # Use the output from the `hello` step
       - name: Get the output time
