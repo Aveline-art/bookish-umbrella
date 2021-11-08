@@ -9,43 +9,51 @@ const inputs = {
   labelString: core.getInput('label-string'),
   message: core.getInput('message'),
 }
-const message = core.getInput('message')
+
+const eventFunctions = {
+  issues: issueFunction,
+  pull_request: prFunction,
+}
 
 const octokit = github.getOctokit(inputs.myToken)
 const payload = github.context.payload
-const eventName = github.context.eventName
+const eventFuntion = eventFunctions[github.context.eventName]
 
 
 // TODO, if no label string is provided, the check is skipped
 function main() {
   try {
-    if (eventName == 'issues') {
-      const issueLabels = payload.issue.labels.map(label => {
-        return label.name
-      })
-      if (labelChecker.analyze(inputs.labelString, issueLabels)) {
-        octokit.rest.issues.createComment({
-          owner: payload.repository.owner.login,
-          repo: payload.repository.name,
-          issue_number: payload.issue.number,
-          body: inputs.message,
-        });
-      }
-    } else if (eventName == 'pull_request') {
-      const prLabels = payload.pull_request.labels.map(label => {
-        return label.name
-      })
-      if (labelChecker.analyze(inputs.labelString, prLabels)) {
-        octokit.rest.issues.createComment({
-          owner: payload.repository.owner.login,
-          repo: payload.repository.name,
-          issue_number: payload.pull_request.number,
-          body: inputs.message,
-        });
-      }
-    }
+    eventFuntion()
   } catch (error) {
     core.setFailed(error.message);
+  }
+}
+
+function issueFunction() {
+  const issueLabels = payload.issue.labels.map(label => {
+    return label.name
+  })
+  if (labelChecker.analyze(inputs.labelString, issueLabels)) {
+    octokit.rest.issues.createComment({
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      issue_number: payload.issue.number,
+      body: inputs.message,
+    });
+  }
+}
+
+function prFunction() {
+  const prLabels = payload.pull_request.labels.map(label => {
+    return label.name
+  })
+  if (labelChecker.analyze(inputs.labelString, prLabels)) {
+    octokit.rest.issues.createComment({
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      issue_number: payload.pull_request.number,
+      body: inputs.message,
+    });
   }
 }
 
