@@ -8462,14 +8462,18 @@ function main() {
   console.log('eventname', eventName)
   try {
     if (eventName == '"issues"') {
-      const issueLabels = payload.issue.labels
+      const issueLabels = payload.issue.labels.filter(label => {
+        label.name
+      })
       console.log('labels', labels)
       console.log('issueLabels', issueLabels)
       console.log('message', message)
         // API call
       
     } else if (eventName == '"pull_request"') {
-      const prLabels = payload.issue.labels
+      const prLabels = payload.issue.labels.filter(label => {
+        label.name
+      })
       console.log('labels', labels)
       console.log('issueLabels', issueLabels)
       console.log('message', message)
