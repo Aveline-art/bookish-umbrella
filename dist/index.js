@@ -8659,20 +8659,21 @@ const eventName = JSON.stringify(github.context.eventName)
 
 // TODO, if no label string is provided, the check is skipped
 function main() {
-  console.log(labels)
   try {
     if (eventName == 'issues') {
       const issueLabels = payload.issue.labels
-      if (repl.analyze(labels, issueLabels)) {
-        console.log(message)
+      console.log('labels', labels)
+      console.log('issueLabels', issueLabels)
+      console.log('message', message)
         // API call
-      }
+      
     } else if (eventName == 'pull_request') {
       const prLabels = payload.issue.labels
-      if (repl.analyze(labels, prLabels)) {
-        console.log(message)
+      console.log('labels', labels)
+      console.log('issueLabels', issueLabels)
+      console.log('message', message)
         // API call
-      }
+      
     }
 
     const time = (new Date()).toTimeString();
