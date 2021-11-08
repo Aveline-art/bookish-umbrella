@@ -8463,14 +8463,14 @@ function main() {
   try {
     if (eventName == '"issues"') {
       const issueLabels = payload.issue.labels
-      console.log('labels', labels)
+      console.log('labels', core.getInput('labels'))
       console.log('issueLabels', issueLabels)
       console.log('message', message)
         // API call
       
     } else if (eventName == '"pull_request"') {
       const prLabels = payload.issue.labels
-      console.log('labels', labels)
+      console.log('labels', core.getInput('labels'))
       console.log('issueLabels', issueLabels)
       console.log('message', message)
         // API call
