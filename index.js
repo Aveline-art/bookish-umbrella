@@ -15,6 +15,7 @@ const eventName = JSON.stringify(github.context.eventName)
 
 // TODO, if no label string is provided, the check is skipped
 function main() {
+  console.log(labels)
   try {
     if (eventName == 'issues') {
       const issueLabels = payload.issue.labels
