@@ -1,14 +1,17 @@
 // Imports
 const core = require('@actions/core');
 const github = require('@actions/github');
-const repl = require('./repl');
+const labelChecker = require('./label');
 
 // Globals
-const myToken = core.getInput('myToken');
-const labels = core.getInput('labels')
+const inputs = {
+  myToken: core.getInput('myToken'),
+  labelString: core.getInput('label-string'),
+  message: core.getInput('message'),
+}
 const message = core.getInput('message')
 
-const octokit = github.getOctokit(myToken)
+const octokit = github.getOctokit(inputs.myToken)
 const payload = github.context.payload
 const eventName = github.context.eventName
 
@@ -20,24 +23,24 @@ function main() {
       const issueLabels = payload.issue.labels.map(label => {
         return label.name
       })
-      if (repl.analyze(labels, issueLabels)) {
+      if (labelChecker.analyze(inputs.labelString, issueLabels)) {
         octokit.rest.issues.createComment({
           owner: payload.repository.owner.login,
           repo: payload.repository.name,
           issue_number: payload.issue.number,
-          body: message,
+          body: inputs.message,
         });
       }
     } else if (eventName == 'pull_request') {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
       })
-      if (repl.analyze(labels, prLabels)) {
+      if (labelChecker.analyze(inputs.labelString, prLabels)) {
         octokit.rest.issues.createComment({
           owner: payload.repository.owner.login,
           repo: payload.repository.name,
           issue_number: payload.pull_request.number,
-          body: message,
+          body: inputs.message,
         });
       }
     }

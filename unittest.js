@@ -1,4 +1,4 @@
-const repl = require('./repl');
+const label = require('./label');
 
 const s1 = 'dependency and not bug'
 const s2 = '(bug, dependency) / (enhancement and invalid)'
@@ -57,7 +57,7 @@ function test(func, expected) {
 
 function testInterpreter(s) {
     try {
-        const interpreter = new repl.Interpreter(s)
+        const interpreter = new label.Interpreter(s)
         return interpreter.tokenize()
     } catch(error) {
         console.error('This gave an error')
@@ -66,8 +66,8 @@ function testInterpreter(s) {
 
 function testAnalyzer(s, a) {
     try {
-        const interpreter = new repl.Interpreter(s)
-        const analyzer = new repl.Analyzer(interpreter.tokenize(), a)
+        const interpreter = new label.Interpreter(s)
+        const analyzer = new label.Analyzer(interpreter.tokenize(), a)
         return analyzer.analyze()
     } catch(error) {
         console.error('This gave an error')

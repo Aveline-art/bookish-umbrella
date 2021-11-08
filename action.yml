@@ -4,7 +4,7 @@ inputs:
   myToken:  # id of input
     description: 'A valid API token scoped to post comments on the repo'
     required: true
-  labels:  # id of input
+  label-string:  # id of input
     description: 'Labels to verify; please see docs for wording logic'
     required: false
   message:  # id of input
