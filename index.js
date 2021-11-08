@@ -28,8 +28,6 @@ function main() {
           body: message,
         });
       }
-        // API call
-      
     } else if (eventName == 'pull_request') {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name

@@ -8280,7 +8280,7 @@ function wrappy (fn, cb) {
 
 // Globals
 DELIMITERS = Array.from(' \n\t\r')
-STRINGCHAR = Array.from('`')
+STRINGCHAR = Array.from('\'"`')
 SYMBOLCHAR = Array.from('()[]{},/!')
 
 
@@ -8672,8 +8672,6 @@ function main() {
           body: message,
         });
       }
-        // API call
-      
     } else if (eventName == 'pull_request') {
       const prLabels = payload.pull_request.labels.map(label => {
         return label.name
