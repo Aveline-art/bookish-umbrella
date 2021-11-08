@@ -8463,7 +8463,7 @@ function main() {
   try {
     if (eventName == '"issues"') {
       const issueLabels = payload.issue.labels.filter(label => {
-        label.name
+        return label.name
       })
       console.log('labels', labels)
       console.log('issueLabels', issueLabels)
@@ -8472,7 +8472,7 @@ function main() {
       
     } else if (eventName == '"pull_request"') {
       const prLabels = payload.issue.labels.filter(label => {
-        label.name
+        return label.name
       })
       console.log('labels', labels)
       console.log('issueLabels', issueLabels)
