@@ -1,21 +1,35 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'I Ship LenaxShin'
+description: 'Label comments by flexible conditions'
 inputs:
-  issue-number:
-    description: 'The issue or pull request number to post the comment'
-    required: true
+  # Absolutely required to function
   message:
     description: 'Comment to post if conditions are met'
     required: true
   myToken:
     description: 'A valid API token scoped to post comments on the repo'
     required: true
+  
+  # Ways to get an issue number, at least one is required
+  columns:
+    description: 'Get all issues from a column'
+    required: false
+  issue-number:
+    description: 'Get the issue with the indicated number'
+    required: false
+  
+  # Ways to filter
   all:
-    description: 'Set this to true if a comment should be made regardless of other factors'
+    description: 'Set this to true if to post a comment regardless of other factors'
     required: false
     default: false
   label-string:
-    description: 'Labels to verify; please see docs for wording logic'
+    description: 'Labels to verify to post a comment; see docs for syntax'
+    required: false
+  stale-days:
+    description: 'Number of days of inactivity to post a comment'
+    required: false
+  stale-by-assignee: # requires stale-days
+    description: 'If the assignee left an issue stale, post a comment'
     required: false
 runs:
   using: 'node12'
