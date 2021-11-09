@@ -149,6 +149,7 @@ async function getIssueNumsFromColumns(columnIds) {
 }
 
 function parseStringToNums(string, delimiter = ', ') {
+  console.log(string)
   if (string) {
     const arr = string.split(delimiter)
     const results = []
