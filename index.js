@@ -5,12 +5,15 @@ const labelChecker = require('./label');
 
 // Globals
 const inputs = {
+  //TODO check the type of all when it is retrieved to make sure it is a bool
   all: core.getInput('all'),
   issueNumber: core.getInput('issue-number'),
   labelString: core.getInput('label-string'),
   myToken: core.getInput('myToken'),
   message: core.getInput('message'),
 }
+
+console.log(typeof inputs.all)
 
 const eventFunctions = {
   issues: issueFunction,
