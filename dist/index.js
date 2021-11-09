@@ -8651,7 +8651,7 @@ const repl = __nccwpck_require__(2386);
 
 const inputs = {
   all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
-  columns: parseStringToNums(core.getInput('column')), // an array of numbers or null
+  columns: parseStringToNums(core.getInput('columns')), // an array of numbers or null
   issueNumbers: parseStringToNums(core.getInput('issue-numbers')), // an array of numbers or null
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
@@ -8793,7 +8793,6 @@ async function getIssueNumsFromColumns(columnIds) {
 }
 
 function parseStringToNums(string, delimiter = ', ') {
-  console.log(string)
   if (string) {
     const arr = string.split(delimiter)
     const results = []
