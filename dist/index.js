@@ -8651,8 +8651,8 @@ const repl = __nccwpck_require__(2386);
 
 const inputs = {
   all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
-  columns: parseStringToNums(core.getInput('column')), // an array of numbers
-  issueNumbers: parseStringToNums(core.getInput('issue-numbers')), // an array of numbers
+  columns: parseStringToNums(core.getInput('column')), // an array of numbers or null
+  issueNumbers: parseStringToNums(core.getInput('issue-numbers')), // an array of numbers or null
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
   message: core.getInput('message'), // a string containing the message to comment
@@ -8672,8 +8672,27 @@ const eventFunction = eventFunctions[github.context.eventName]
 // main call
 async function main() {
   try {
-    const numberArr = getAllIssueNums(inputs.columns, inputs.issueNumbers)
-    eventFunction(numberArr)
+    const issueNumSet = new Set()
+
+    if (inputs.columns) {
+      (await getIssueNumsFromColumns(inputs.columns)).forEach(item => {
+        issueNumSet.add(item)
+      })
+    }
+
+    if (inputs.issueNumbers) {
+      inputs.issueNumbers.forEach(item => {
+        issueNumSet.add(item)
+      })
+    }
+
+    const issueNumArr = Array.from(issueNumSet)
+
+    if (issueNumArr.length > 0) {
+      eventFunction(issueNumArr)
+    } else {
+      core.setFailed('No target found')
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -8760,34 +8779,35 @@ function postComment(issueNumbers) {
 /// Helpers ///
 ///////////////
 
-async function getAllIssueNums(columnIds, issueNumbers) {
-  var issueNumSet = new Set()
+async function getIssueNumsFromColumns(columnIds) {
+  const set = new Set()
 
-  for (const num in columnIds) {
-    if (num) {
-      const result = getIssueNumsFromColumn(num)
-      result.forEach(item => issueNumSet.add(item))
-    }
+  for (const column of columnIds) {
+    const result = getIssueNumsFromColumn(column)
+    result.forEach(item => {
+      set.add(item)
+    })
   }
 
-  if (issueNumbers) {
-    issueNumbers.forEach(item => issueNumSet.add(item))
-  }
-  return Array.from(issueNumSet)
+  return Array.from(set)
 }
 
 function parseStringToNums(string, delimiter = ', ') {
-  const arr = string.split(delimiter)
-  const results = []
-  for (const item of arr) {
-    const result = parseInt(item)
-    if (result) {
-      results.push(result)
-    } else {
-      core.setFailed(`${item} is not a number`)
+  if (string) {
+    const arr = string.split(delimiter)
+    const results = []
+    for (const item of arr) {
+      const result = parseInt(item)
+      if (result) {
+        results.push(result)
+      } else {
+        core.setFailed(`${item} is not a number`)
+      }
     }
+    return results
+  } else {
+    return null
   }
-  return results
 }
 
 main()
