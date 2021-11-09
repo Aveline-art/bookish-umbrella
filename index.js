@@ -14,6 +14,7 @@ const inputs = {
 }
 
 console.log(typeof inputs.all)
+console.log(inputs.all)
 
 const eventFunctions = {
   issues: issueFunction,
