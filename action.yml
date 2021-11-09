@@ -1,4 +1,4 @@
-name: 'I Ship LenaxShin'
+name: 'Bookish-Umbrella'
 description: 'Label comments by flexible conditions'
 inputs:
   # Absolutely required to function
@@ -10,10 +10,10 @@ inputs:
     required: true
   
   # Ways to get an issue number, at least one is required
-  columns:
-    description: 'Get all issues from a column'
+  columns: # Comma separated list of numbers
+    description: 'Get all issues from the indicated columns'
     required: false
-  issue-number:
+  issue-numbers: # Comma separated list of numbers
     description: 'Get the issue with the indicated number'
     required: false
   
@@ -35,5 +35,5 @@ runs:
   using: 'node12'
   main: 'dist/index.js'
 branding:
-  icon: 'feather'  
+  icon: 'umbrella'  
   color: 'purple'

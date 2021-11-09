@@ -8649,16 +8649,16 @@ const repl = __nccwpck_require__(2386);
 
 // Globals
 
-
-// TODO allow some alternative way of getting mass issues when a specific number is not applied
-// TODO the issue number needs to be able to handle comma separated issue numbers
 const inputs = {
   all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
-  issueNumber: core.getInput('issue-number'), // a string made of digit-chars
+  columns: core.getInput('column').split(', '), // an array of digit-chars
+  issueNumbers: core.getInput('issue-numbers').split(', '), // an array of digit-chars
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
   message: core.getInput('message'), // a string containing the message to comment
 }
+
+console.log(inputs)
 
 const eventFunctions = {
   issues: issueFunction,
@@ -8670,9 +8670,10 @@ const payload = github.context.payload
 const eventFunction = eventFunctions[github.context.eventName]
 
 // main call
-function main() {
+async function main() {
   try {
-    eventFunction()
+    const numberArr = getAllIssueNums(inputs.columns, inputs.issueNumbers)
+    eventFunction(numberArr)
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -8683,36 +8684,96 @@ function main() {
 /// Logic Handler Functions ///
 ///////////////////////////////
 
-function issueFunction() {
+function issueFunction(issueNumbers) {
   const issueLabels = payload.issue.labels.map(label => {
     return label.name
   })
   // needs to do something when all is false but there are no assignees, only labelString, aka, assume true unless there is an input to analyze
   if (inputs.all || repl.analyze(inputs.labelString, issueLabels)) {
-    apiCall()
+    postComment(issueNumbers)
   }
 }
 
-function prFunction() {
+function prFunction(issueNumbers) {
   const prLabels = payload.pull_request.labels.map(label => {
     return label.name
   })
   if (inputs.all || repl.analyze(inputs.labelString, prLabels)) {
-    apiCall()
+    postComment(issueNumbers)
   }
 }
 
-////////////////
-/// API Call ///
-////////////////
+/////////////////
+/// API Calls ///
+/////////////////
 
-function apiCall() {
-  octokit.rest.issues.createComment({
-    owner: payload.repository.owner.login,
-    repo: payload.repository.name,
-    issue_number: inputs.issueNumber,
-    body: inputs.message,
-  });
+/**
+ * Generator that returns issue numbers from cards in a column.
+ * @param {Number} columnId the id of the column in GitHub's database
+ * @returns an Array of issue numbers
+ */
+async function* getIssueNumsFromColumn(columnId) {
+  let page = 1;
+  while (page < 100) {
+    try {
+      const results = await octokit.rest.projects.listCards({
+        column_id: columnId,
+        per_page: 100,
+        page: page
+      });
+
+      if (results.data.length) {
+        for (let card of results.data) {
+          if (card.hasOwnProperty('content_url')) {
+            const arr = card.content_url.split('/');
+            yield arr.pop()
+          }
+        }
+      } else {
+        return
+      }
+    } catch {
+      continue
+    } finally {
+      page++;
+    }
+  }
+}
+
+function postComment(issueNumbers) {
+  for (const num of issueNumbers) {
+    try {
+      octokit.rest.issues.createComment({
+        owner: payload.repository.owner.login,
+        repo: payload.repository.name,
+        issue_number: num,
+        body: inputs.message,
+      });
+    } catch (error) {
+      core.setFailed(error.message);
+      core.setFailed(`Could not post a comment for issue number ${num}`)
+    }
+  }
+}
+
+///////////////
+/// Helpers ///
+///////////////
+
+async function getAllIssueNums(columnIds, issueNumbers) {
+  var issueNumSet = Set()
+
+  if (columnIds) {
+    for (num in columnIds) {
+      const result = getIssueNumsFromColumn(num)
+      result.forEach(item => issueNumSet.add(item))
+    }
+  }
+
+  if (issueNumbers) {
+    issueNumbers.forEach(item => issueNumSet.add(item))
+  }
+  return Array.from(issueNumSet)
 }
 
 main()
