@@ -7,8 +7,8 @@ const repl = require('./repl');
 
 const inputs = {
   all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
-  columns: core.getInput('column').split(', '), // an array of digit-chars
-  issueNumbers: core.getInput('issue-numbers').split(', '), // an array of digit-chars
+  columns: parseStringToNums(core.getInput('column')), // an array of numbers
+  issueNumbers: parseStringToNums(core.getInput('issue-numbers')), // an array of numbers
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
   message: core.getInput('message'), // a string containing the message to comment
@@ -130,6 +130,20 @@ async function getAllIssueNums(columnIds, issueNumbers) {
     issueNumbers.forEach(item => issueNumSet.add(item))
   }
   return Array.from(issueNumSet)
+}
+
+function parseStringToNums(string, delimiter = ', ') {
+  const arr = string.split(delimiter)
+  const results = []
+  for (const item of arr) {
+    const result = parseInt(item)
+    if (result) {
+      results.push(result)
+    } else {
+      core.setFailed(`${item} is not a number`)
+    }
+  }
+  return results
 }
 
 main()
