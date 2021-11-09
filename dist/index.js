@@ -8784,9 +8784,9 @@ async function getIssueNumsFromColumns(columnIds) {
 
   for (const column of columnIds) {
     const result = getIssueNumsFromColumn(column)
-    result.forEach(item => {
+    for await (const item of result) {
       set.add(item)
-    })
+    }
   }
 
   return Array.from(set)
