@@ -12,6 +12,7 @@ jobs:
         id: hello
         uses: Aveline-art/bookish-umbrella@main
         with:
+          issue-number: ${{ github.event.issue.number }}
           myToken: ${{ secrets.GITHUB_TOKEN }}
           label-string: dependency
           message: 'This is an issue message'

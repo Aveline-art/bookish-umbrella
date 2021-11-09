@@ -12,6 +12,7 @@ jobs:
         id: hello
         uses: Aveline-art/bookish-umbrella@main
         with:
+          issue-number: ${{ github.event.pull_request.number }}
           myToken: ${{ secrets.GITHUB_TOKEN }}
           label-string: "'good first issue'"
           message: 'This is a pr message'

@@ -1,15 +1,22 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-  myToken:  # id of input
-    description: 'A valid API token scoped to post comments on the repo'
+  issue-number:
+    description: 'The issue or pull request number to post the comment'
     required: true
-  label-string:  # id of input
-    description: 'Labels to verify; please see docs for wording logic'
-    required: false
-  message:  # id of input
+  message:
     description: 'Comment to post if conditions are met'
     required: true
+  myToken:
+    description: 'A valid API token scoped to post comments on the repo'
+    required: true
+  all:
+    description: 'Set this to true if a comment should be made regardless of other factors'
+    required: false
+    default: false
+  label-string:
+    description: 'Labels to verify; please see docs for wording logic'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

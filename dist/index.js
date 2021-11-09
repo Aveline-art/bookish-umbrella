@@ -8649,8 +8649,10 @@ const labelChecker = __nccwpck_require__(3727);
 
 // Globals
 const inputs = {
-  myToken: core.getInput('myToken'),
+  all: core.getInput('all'),
+  issueNumber: core.getInput('issue-number'),
   labelString: core.getInput('label-string'),
+  myToken: core.getInput('myToken'),
   message: core.getInput('message'),
 }
 
@@ -8677,11 +8679,11 @@ function issueFunction() {
   const issueLabels = payload.issue.labels.map(label => {
     return label.name
   })
-  if (labelChecker.analyze(inputs.labelString, issueLabels)) {
+  if (inputs.all || labelChecker.analyze(inputs.labelString, issueLabels)) {
     octokit.rest.issues.createComment({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
-      issue_number: payload.issue.number,
+      issue_number: inputs.issueNumber,
       body: inputs.message,
     });
   }
@@ -8691,11 +8693,11 @@ function prFunction() {
   const prLabels = payload.pull_request.labels.map(label => {
     return label.name
   })
-  if (labelChecker.analyze(inputs.labelString, prLabels)) {
+  if (inputs.all || labelChecker.analyze(inputs.labelString, prLabels)) {
     octokit.rest.issues.createComment({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
-      issue_number: payload.pull_request.number,
+      issue_number: inputs.issueNumber,
       body: inputs.message,
     });
   }
