@@ -1,20 +1,16 @@
 // Imports
 const core = require('@actions/core');
 const github = require('@actions/github');
-const labelChecker = require('./label');
+const repl = require('./repl');
 
 // Globals
 const inputs = {
-  //TODO check the type of all when it is retrieved to make sure it is a bool
-  all: core.getInput('all') === true,
-  issueNumber: core.getInput('issue-number'),
-  labelString: core.getInput('label-string'),
+  all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
+  issueNumber: core.getInput('issue-number'), // a string made of digit-chars
+  labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   myToken: core.getInput('myToken'),
   message: core.getInput('message'),
 }
-
-console.log(typeof inputs.all)
-console.log(inputs.all)
 
 const eventFunctions = {
   issues: issueFunction,
@@ -39,7 +35,7 @@ function issueFunction() {
   const issueLabels = payload.issue.labels.map(label => {
     return label.name
   })
-  if (inputs.all || labelChecker.analyze(inputs.labelString, issueLabels)) {
+  if (inputs.all || repl.analyze(inputs.labelString, issueLabels)) {
     octokit.rest.issues.createComment({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
@@ -53,7 +49,7 @@ function prFunction() {
   const prLabels = payload.pull_request.labels.map(label => {
     return label.name
   })
-  if (inputs.all || labelChecker.analyze(inputs.labelString, prLabels)) {
+  if (inputs.all || repl.analyze(inputs.labelString, prLabels)) {
     octokit.rest.issues.createComment({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
