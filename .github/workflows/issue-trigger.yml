@@ -12,6 +12,7 @@ jobs:
         id: api-json
         uses: Aveline-art/bookish-umbrella@main
         with:
+          columns: 16784461, 16784462
           issue-numbers: ${{ github.event.issue.number }}
           myToken: ${{ secrets.GITHUB_TOKEN }}
           label-string: dependency
