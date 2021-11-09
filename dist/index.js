@@ -8650,7 +8650,7 @@ const labelChecker = __nccwpck_require__(3727);
 // Globals
 const inputs = {
   //TODO check the type of all when it is retrieved to make sure it is a bool
-  all: core.getInput('all'),
+  all: core.getInput('all') === true,
   issueNumber: core.getInput('issue-number'),
   labelString: core.getInput('label-string'),
   myToken: core.getInput('myToken'),
