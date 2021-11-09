@@ -8761,10 +8761,10 @@ function postComment(issueNumbers) {
 ///////////////
 
 async function getAllIssueNums(columnIds, issueNumbers) {
-  var issueNumSet = Set()
+  var issueNumSet = new Set()
 
-  if (columnIds) {
-    for (num in columnIds) {
+  for (const num in columnIds) {
+    if (num) {
       const result = getIssueNumsFromColumn(num)
       result.forEach(item => issueNumSet.add(item))
     }
