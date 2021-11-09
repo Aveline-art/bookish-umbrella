@@ -30,34 +30,55 @@ async function main() {
   try {
     const issueNumSet = new Set()
 
-    if (inputs.columns) {
-      (await getIssueNumsFromColumns(inputs.columns)).forEach(item => {
-        issueNumSet.add(item)
-      })
-    }
-
-    if (inputs.issueNumbers) {
-      inputs.issueNumbers.forEach(item => {
-        issueNumSet.add(item)
-      })
-    }
+    // Part 1: Target Collection Functions
+    await getIssueNumsFromColumns(inputs.columns, issueNumSet)
+    getIssueNumsFromIssueNums(inputs.issueNumbers, issueNumSet)
 
     const issueNumArr = Array.from(issueNumSet)
 
+    // Part 2: Logic Handler Functions
     if (issueNumArr.length > 0) {
       eventFunction(issueNumArr)
     } else {
       core.setFailed('No target found')
     }
+    
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
+///////////////////////////////////////////
+/// Part 1: Target Collection Functions ///
+///////////////////////////////////////////
 
-///////////////////////////////
-/// Logic Handler Functions ///
-///////////////////////////////
+async function getIssueNumsFromColumns(columnIds, set) {
+  if (columnIds) {
+    for (const column of columnIds) {
+      const result = getIssueNumsFromColumn(column)
+      for await (const item of result) {
+        set.add(item)
+      }
+    }
+  }
+
+  return set
+}
+
+function getIssueNumsFromIssueNums(issueNums, set) {
+  if (issueNums) {
+    issueNums.forEach(item => {
+      set.add(item)
+    })
+  }
+
+  return set
+}
+
+
+///////////////////////////////////////
+/// Part 2: Logic Handler Functions ///
+///////////////////////////////////////
 
 function issueFunction(issueNumbers) {
   const issueLabels = payload.issue.labels.map(label => {
@@ -65,7 +86,9 @@ function issueFunction(issueNumbers) {
   })
   // needs to do something when all is false but there are no assignees, only labelString, aka, assume true unless there is an input to analyze
   if (inputs.all || repl.analyze(inputs.labelString, issueLabels)) {
-    postComment(issueNumbers)
+    for (const num of issueNumbers) {
+      postComment(num)
+    }
   }
 }
 
@@ -74,7 +97,9 @@ function prFunction(issueNumbers) {
     return label.name
   })
   if (inputs.all || repl.analyze(inputs.labelString, prLabels)) {
-    postComment(issueNumbers)
+    for (const num of issueNumbers) {
+      postComment(num)
+    }
   }
 }
 
@@ -115,38 +140,23 @@ async function* getIssueNumsFromColumn(columnId) {
   }
 }
 
-function postComment(issueNumbers) {
-  for (const num of issueNumbers) {
-    try {
-      octokit.rest.issues.createComment({
-        owner: payload.repository.owner.login,
-        repo: payload.repository.name,
-        issue_number: num,
-        body: inputs.message,
-      });
-    } catch (error) {
-      core.setFailed(error.message);
-      core.setFailed(`Could not post a comment for issue number ${num}`)
-    }
+function postComment(issueNumber) {
+  try {
+    octokit.rest.issues.createComment({
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      issue_number: issueNumber,
+      body: inputs.message,
+    });
+  } catch (error) {
+    core.setFailed(error.message);
+    core.setFailed(`Could not post a comment for issue number ${num}`)
   }
 }
 
 ///////////////
 /// Helpers ///
 ///////////////
-
-async function getIssueNumsFromColumns(columnIds) {
-  const set = new Set()
-
-  for (const column of columnIds) {
-    const result = getIssueNumsFromColumn(column)
-    for await (const item of result) {
-      set.add(item)
-    }
-  }
-
-  return Array.from(set)
-}
 
 function parseStringToNums(string, delimiter = ', ') {
   if (string) {
