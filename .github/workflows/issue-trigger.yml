@@ -8,14 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
-      - name: Hello world action step
-        id: hello
+      - name: Post Comment
+        id: api-json
         uses: Aveline-art/bookish-umbrella@main
         with:
           issue-number: ${{ github.event.issue.number }}
           myToken: ${{ secrets.GITHUB_TOKEN }}
           label-string: dependency
           message: 'This is an issue message'
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
