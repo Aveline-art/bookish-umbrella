@@ -12,7 +12,10 @@ jobs:
         id: api-json
         uses: Aveline-art/bookish-umbrella@main
         with:
-          issue-numbers: ${{ github.event.pull_request.number }}
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          label-string: "'good first issue'"
+          # required
           message: 'This is a pr message'
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+          # targets
+          issue-numbers: ${{ github.event.pull_request.number }}
+          # filters
+          label-string: "'good first issue'"
