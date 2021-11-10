@@ -2,16 +2,23 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const repl = require('./repl');
+const staleness = require('./staleness')
 
 // Globals
-
 const inputs = {
-  all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
+  // Required
+  message: core.getInput('message'), // a string containing the message to comment
+  myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
+
+  // Targets
   columns: parseStringToNums(core.getInput('columns')), // an array of numbers or null
   issueNumbers: parseStringToNums(core.getInput('issue-numbers')), // an array of numbers or null
+
+  // Filters
+  all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
-  myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
-  message: core.getInput('message'), // a string containing the message to comment
+  staleDays: parseInt(core.getInput('stale-days')), // an integer or NaN 
+  staleByAssignee: core.getInput('stale-by-assignee'), // a string
 }
 
 console.log(inputs)
@@ -42,7 +49,7 @@ async function main() {
     } else {
       core.setFailed('No target found')
     }
-    
+
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -176,4 +183,54 @@ function parseStringToNums(string, delimiter = ', ') {
   }
 }
 
-main()
+function test(query) {
+  const result = await octokit.graphql(query);
+}
+
+const query = 
+`
+{
+    repository(owner: "Aveline-art", name: "bookish-umbrella") {
+      issue(number: 112) {
+        number
+        assignees(first: 10) {
+          nodes {
+            login
+          }
+        }
+        timelineItems(since: "2021-11-08T23:22:00.804Z" last:100) {
+          nodes {
+            ... on IssueComment {
+              author {
+                login
+              }
+              createdAt
+            }
+            ... on CrossReferencedEvent {
+              createdAt 
+              source {
+                ... on PullRequest {
+                  author {
+                    login
+                  }
+                  number
+                }
+                ... on Issue {
+                  author {
+                    login
+                  }
+                  number
+                }
+              }
+              willCloseTarget
+            }
+          }
+        }
+      }
+    }
+}  
+`
+
+test(query)
+
+//main()
