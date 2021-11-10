@@ -185,7 +185,7 @@ function parseStringToNums(string, delimiter = ', ') {
 
 async function test(query) {
   const result = await octokit.graphql(query);
-  console.log(result)
+  console.log(JSON.stringify(result))
 }
 
 const query = 
