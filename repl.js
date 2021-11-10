@@ -6,7 +6,6 @@ STRINGCHAR = Array.from('\'"`')
 SYMBOLCHAR = Array.from('()[]{},/!')
 
 
-// main function
 function analyze(s, arr) {
     const interpreter = new Interpreter(s)
     const analyzer = new Analyzer(interpreter.tokenize(), arr)
