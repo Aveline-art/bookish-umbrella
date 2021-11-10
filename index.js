@@ -183,8 +183,9 @@ function parseStringToNums(string, delimiter = ', ') {
   }
 }
 
-function test(query) {
+async function test(query) {
   const result = await octokit.graphql(query);
+  console.log(result)
 }
 
 const query = 
