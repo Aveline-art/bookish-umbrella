@@ -111,7 +111,7 @@ async function issueFunction(issueNums) {
     const timelineAnalysis = inputs.staleDays ? staleness.analyze(issueNum, timelineItems, cutOffTimeStale) : true
 
     if (labelAnalysis && timelineAnalysis) {
-      postComment(num)
+      postComment(issueNum)
     }
   }
 }
