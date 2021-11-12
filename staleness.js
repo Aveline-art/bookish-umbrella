@@ -53,13 +53,12 @@ class Issue {
         }
 
         for (const moment of this.moments) {
-            console.log(this.number, moment.constructor.name)
             if (moment.constructor.name == 'CommentMoment') {
                 if (moment.isCommentByAssignees(this.assignees)) {
                     return false
                 }
             } else if (moment.constructor.name == 'AssignedMoment') {
-                console.log(this.number, moment.assignee, this.assignee)
+                console.log(this.number, moment.assignee, this.assignees)
                 if (moment.isAssigneeInList(this.assignees)) {
                     return false
                 }
