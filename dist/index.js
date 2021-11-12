@@ -8659,6 +8659,7 @@ class Issue {
         }
 
         for (const moment of this.moments) {
+            console.log(this.number, moment.name)
             if (moment.name == 'CommentMoment') {
                 if (moment.isCommentByAssignees(this.assignees)) {
                     return false
@@ -8997,8 +8998,6 @@ async function issueFunction(issueNums) {
       assignees: assignees,
       timelineItems: timelineItems,
     }) : true
-
-    console.log(issueNum, timelineAnalysis, inputs.staleDays)
 
     if (labelAnalysis && timelineAnalysis) {
       postComment(issueNum)

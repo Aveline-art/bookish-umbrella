@@ -115,8 +115,6 @@ async function issueFunction(issueNums) {
       timelineItems: timelineItems,
     }) : true
 
-    console.log(issueNum, timelineAnalysis, inputs.staleDays)
-
     if (labelAnalysis && timelineAnalysis) {
       postComment(issueNum)
     }
