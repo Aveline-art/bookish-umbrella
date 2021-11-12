@@ -40,6 +40,15 @@ function queryIssue(data) {
                   login
                 }
               }
+              ... on AssignedEvent {
+                createdAt
+                assignee {
+                  __typename
+                  ... on User {
+                    login
+                  }
+                }
+              }
             }
           }
         }
@@ -90,6 +99,15 @@ function queryPr(data) {
               createdAt
               author {
                 login
+              }
+            }
+            ... on AssignedEvent {
+              createdAt
+              assignee {
+                __typename
+                ... on User {
+                  login
+                }
               }
             }
           }
