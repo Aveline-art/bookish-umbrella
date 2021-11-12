@@ -8654,6 +8654,7 @@ class Issue {
     }
 
     isIssueStale() {
+        console.log(this.number, this.assignees)
         if (this.linkedNum || !this.assignees.length) {
             return false
         }
@@ -8664,7 +8665,6 @@ class Issue {
                     return false
                 }
             } else if (moment.constructor.name == 'AssignedMoment') {
-                console.log(this.number, moment.assignee, this.assignees)
                 if (moment.isAssigneeInList(this.assignees)) {
                     return false
                 }
