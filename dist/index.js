@@ -8276,7 +8276,7 @@ function wrappy (fn, cb) {
 /***/ 5930:
 /***/ ((module) => {
 
-function query(data) {
+function queryIssue(data) {
   const queryVariables = `
     {
       repository(owner: "${data.owner}", name: "${data.repo}") {
@@ -8293,6 +8293,9 @@ function query(data) {
           }
           number
           createdAt
+          author {
+            login
+          }
           timelineItems(since: "${data.since}", last: 100) {
             nodes {
               __typename
@@ -8325,7 +8328,59 @@ function query(data) {
   return queryVariables
 }
 
-module.exports = { query }
+function queryPr(data) {
+  const queryVariables = `
+  {
+    repository(owner: "${data.owner}", name: "${data.repo}") {
+      pullRequest(number: ${data.pull_number}) {
+        assignees(first: 10) {
+          nodes {
+            login
+          }
+        }
+        labels(first:100) {
+          nodes {
+            name
+          }
+        }
+        number
+        createdAt
+        author {
+          login
+        }
+        timelineItems(since: "${data.since}", last: 100) {
+          nodes {
+            __typename
+            ... on CrossReferencedEvent {
+              createdAt
+              source {
+                ... on PullRequest {
+                  author {
+                    login
+                  }
+                  number
+                  createdAt
+                }
+              }
+              willCloseTarget
+            }
+            ... on Comment {
+              createdAt
+              author {
+                login
+              }
+            }
+          }
+        }
+      }
+    }
+  }  
+  `
+
+  return queryVariables
+}
+
+module.exports = { queryIssue, queryPr }
 
 /***/ }),
 
@@ -8790,7 +8845,7 @@ var __webpack_exports__ = {};
 // Imports
 const core = __nccwpck_require__(4550);
 const github = __nccwpck_require__(1805);
-const { query } = __nccwpck_require__(5930);
+const { queryIssue, queryPr } = __nccwpck_require__(5930);
 const repl = __nccwpck_require__(2386);
 const staleness = __nccwpck_require__(2851)
 
@@ -8824,7 +8879,7 @@ const eventFunction = eventFunctions[github.context.eventName]
 const owner = payload.repository.owner.login
 const repo = payload.repository.name
 const cutOffTimeStale = new Date()
-cutOffTimeStale.setDate(cutOffTimeStale.getDate() - inputs.staleDays) 
+cutOffTimeStale.setDate(cutOffTimeStale.getDate() - inputs.staleDays)
 
 // main call
 async function main() {
@@ -8882,7 +8937,6 @@ function getIssueNumsFromIssueNums(issueNums, set) {
 ///////////////////////////////////////
 
 async function issueFunction(issueNums) {
-  console.log(cutOffTimeStale)
   for (const issueNum of issueNums) {
     const result = await octokit.graphql(query({
       owner: owner,
@@ -8895,7 +8949,7 @@ async function issueFunction(issueNums) {
       return label.name
     })
     const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, issueLabels) : true
-  
+
     const timelineItems = result.repository.issue.timelineItems.nodes
     const timelineAnalysis = inputs.staleDays ? staleness.analyze(issueNum, timelineItems, cutOffTimeStale) : true
 
@@ -8905,20 +8959,27 @@ async function issueFunction(issueNums) {
   }
 }
 
-function prFunction(issueNums) {
-  /*
-  const prLabels = payload.pull_request.labels.map(label => {
-    return label.name
-  })
+async function prFunction(prNums) {
+  for (const prNum of prNums) {
+    const result = await octokit.graphql(queryPr({
+      owner: owner,
+      repo: repo,
+      pull_number: prNum,
+      since: cutOffTimeStale.toISOString()
+    }));
 
-  const labelAnalysis = inputs.labelString? repl.analyze(inputs.labelString, prLabels) : true
+    const prLabels = result.repository.pullRequest.labels.nodes.map(label => {
+      return label.name
+    })
+    const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, prLabels) : true
 
-  if (inputs.all || repl.analyze(inputs.labelString, prLabels)) {
-    for (const num of issueNums) {
-      postComment(num)
+    const timelineItems = result.repository.pullRequest.timelineItems.nodes
+    const timelineAnalysis = inputs.staleDays ? staleness.analyze(prNum, timelineItems, cutOffTimeStale) : true
+
+    if (labelAnalysis && timelineAnalysis) {
+      postComment(prNum)
     }
   }
-  */
 }
 
 /////////////////

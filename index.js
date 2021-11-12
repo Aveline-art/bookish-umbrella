@@ -1,7 +1,7 @@
 // Imports
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { query } = require('./query');
+const { queryIssue, queryPr } = require('./query');
 const repl = require('./repl');
 const staleness = require('./staleness')
 
@@ -35,7 +35,7 @@ const eventFunction = eventFunctions[github.context.eventName]
 const owner = payload.repository.owner.login
 const repo = payload.repository.name
 const cutOffTimeStale = new Date()
-cutOffTimeStale.setDate(cutOffTimeStale.getDate() - inputs.staleDays) 
+cutOffTimeStale.setDate(cutOffTimeStale.getDate() - inputs.staleDays)
 
 // main call
 async function main() {
@@ -93,7 +93,6 @@ function getIssueNumsFromIssueNums(issueNums, set) {
 ///////////////////////////////////////
 
 async function issueFunction(issueNums) {
-  console.log(cutOffTimeStale)
   for (const issueNum of issueNums) {
     const result = await octokit.graphql(query({
       owner: owner,
@@ -106,7 +105,7 @@ async function issueFunction(issueNums) {
       return label.name
     })
     const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, issueLabels) : true
-  
+
     const timelineItems = result.repository.issue.timelineItems.nodes
     const timelineAnalysis = inputs.staleDays ? staleness.analyze(issueNum, timelineItems, cutOffTimeStale) : true
 
@@ -116,20 +115,27 @@ async function issueFunction(issueNums) {
   }
 }
 
-function prFunction(issueNums) {
-  /*
-  const prLabels = payload.pull_request.labels.map(label => {
-    return label.name
-  })
+async function prFunction(prNums) {
+  for (const prNum of prNums) {
+    const result = await octokit.graphql(queryPr({
+      owner: owner,
+      repo: repo,
+      pull_number: prNum,
+      since: cutOffTimeStale.toISOString()
+    }));
 
-  const labelAnalysis = inputs.labelString? repl.analyze(inputs.labelString, prLabels) : true
+    const prLabels = result.repository.pullRequest.labels.nodes.map(label => {
+      return label.name
+    })
+    const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, prLabels) : true
 
-  if (inputs.all || repl.analyze(inputs.labelString, prLabels)) {
-    for (const num of issueNums) {
-      postComment(num)
+    const timelineItems = result.repository.pullRequest.timelineItems.nodes
+    const timelineAnalysis = inputs.staleDays ? staleness.analyze(prNum, timelineItems, cutOffTimeStale) : true
+
+    if (labelAnalysis && timelineAnalysis) {
+      postComment(prNum)
     }
   }
-  */
 }
 
 /////////////////
