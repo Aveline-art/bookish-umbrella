@@ -48,6 +48,7 @@ class Issue {
     }
 
     isIssueStale() {
+        console.log(this.assignees)
         if (this.linkedNum || !this.assignees.length) {
             return false
         }

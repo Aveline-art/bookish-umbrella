@@ -8654,6 +8654,7 @@ class Issue {
     }
 
     isIssueStale() {
+        console.log(this.assignees)
         if (this.linkedNum || !this.assignees.length) {
             return false
         }
@@ -8997,6 +8998,8 @@ async function issueFunction(issueNums) {
       assignees: assignees,
       timelineItems: timelineItems,
     }) : true
+
+    console.log(issueNum, timelineAnalysis)
 
     if (labelAnalysis && timelineAnalysis) {
       postComment(issueNum)
