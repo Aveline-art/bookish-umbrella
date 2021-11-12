@@ -8659,12 +8659,11 @@ class Issue {
         }
 
         for (const moment of this.moments) {
-            console.log(this.number, moment.name)
-            if (moment.name == 'CommentMoment') {
+            if (moment.constructor.name == 'CommentMoment') {
                 if (moment.isCommentByAssignees(this.assignees)) {
                     return false
                 }
-            } else if (moment.name == 'AssignedMoment') {
+            } else if (moment.constructor.name == 'AssignedMoment') {
                 if (moment.isAssigneeInList(this.assignees)) {
                     return false
                 }
