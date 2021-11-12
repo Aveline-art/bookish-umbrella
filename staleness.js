@@ -4,22 +4,21 @@
 
 
 // main function
-function analyze(issueNum, cutoffString) {
+function analyze(issueNum, timeline, cutoffString) {
     const issue = new Issue(issueNum)
-    // TODO
-    const result = query()
+
 }
 
 class Issue {
-    constructor(number, assignees=[], moments=[], linkedNum=null) {
+    constructor(number, assignees = [], moments = [], linkedNum = null) {
         this.number = number
         this.assignees = assignees
         this.moments = moments
         this.linkedNum = linkedNum
     }
 
-    addAssignee(assignee) {
-        this.assignees.push(assignee)
+    addAssignee(...assignees) {
+        this.assignees.push(assignees)
     }
 
     addMoment(moment) {
@@ -53,55 +52,33 @@ class CommentMoment extends Moment {
 }
 
 
-`
-{
-    repository(owner: "Aveline-art", name: "bookish-umbrella") {
-      issue(number: 112) {
-        number
-        assignees(first: 10) {
-          nodes {
-            login
-          }
-        }
-        timelineItems(since: "2021-11-08T23:22:00.804Z" last:100) {
-          nodes {
-            ... on IssueComment {
-              author {
-                login
-              }
-              createdAt
-            }
-            ... on CrossReferencedEvent {
-              createdAt 
-              source {
-                ... on PullRequest {
-                  author {
-                    login
-                  }
-                  number
-                }
-                ... on Issue {
-                  author {
-                    login
-                  }
-                  number
-                }
-              }
-              willCloseTarget
-            }
-          }
-        }
-      }
-    }
-}  
-`
+/**
+ * Generator that returns the timeline of an issue.
+ * @param {Number} issueNum the issue's number 
+ * @returns an Array of Objects containing the issue's timeline of events
+ */
+async function* getTimeline(issueNum) {
+    let page = 1
+    while (page < 100) {
+        try {
+            const results = await octokit.rest.issues.listEventsForTimeline({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNum,
+                per_page: 100,
+                page: page,
+            });
 
-function isMomentRecent(dateString, cutoffString) {
-    const dateStringObj = new Date(dateString);
-
-    if (dateStringObj >= cutoffString) {
-        return true
-    } else {
-        return false
+            if (results.data.length) {
+                yield* results.data
+            } else {
+                return
+            }
+        } catch {
+            continue
+        }
+        finally {
+            page++
+        }
     }
 }
