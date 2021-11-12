@@ -47,8 +47,6 @@ async function main() {
 
     const issueNumArr = Array.from(issueNumSet)
 
-    console.log(issueNumArr)
-
     // Part 2: Logic Handler Functions
     if (issueNumArr.length > 0) {
       eventFunction(issueNumArr)
@@ -116,6 +114,8 @@ async function issueFunction(issueNums) {
       assignees: assignees,
       timelineItems: timelineItems,
     }) : true
+
+    console.log(issueNum, timelineAnalysis)
 
     if (labelAnalysis && timelineAnalysis) {
       postComment(issueNum)
