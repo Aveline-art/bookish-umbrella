@@ -18,7 +18,6 @@ function analyze(data) {
     }
 
     return issue.isIssueStale()
-
 }
 
 class Issue {
