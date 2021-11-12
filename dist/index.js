@@ -8584,7 +8584,7 @@ module.exports = { analyze, Analyzer, Interpreter }
 /***/ }),
 
 /***/ 2851:
-/***/ (() => {
+/***/ ((module) => {
 
 // Imports
 
@@ -8648,7 +8648,7 @@ class Moment {
     }
 }
 
-class CommentMoment extends (/* unused pure expression or super */ null && (Moment)) {
+class CommentMoment extends Moment {
     constructor(date, author) {
         super(date)
         this.author = author
@@ -8665,37 +8665,7 @@ class CrossReferencedEvent extends (/* unused pure expression or super */ null &
     }
 }
 
-
-/**
- * Generator that returns the timeline of an issue.
- * @param {Number} issueNum the issue's number 
- * @returns an Array of Objects containing the issue's timeline of events
- */
-async function* getTimeline(issueNum) {
-    let page = 1
-    while (page < 100) {
-        try {
-            const results = await octokit.rest.issues.listEventsForTimeline({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNum,
-                per_page: 100,
-                page: page,
-            });
-
-            if (results.data.length) {
-                yield* results.data
-            } else {
-                return
-            }
-        } catch {
-            continue
-        }
-        finally {
-            page++
-        }
-    }
-}
+module.exports = { analyze }
 
 /***/ }),
 
