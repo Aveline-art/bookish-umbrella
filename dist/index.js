@@ -8645,8 +8645,8 @@ class Issue {
         this.linkedNum = linkedNum
     }
 
-    addAssignee(...assignees) {
-        this.assignees.push(assignees)
+    addAssignee(assignees) {
+        this.assignees.concat(assignees)
     }
 
     addMoment(moment) {
