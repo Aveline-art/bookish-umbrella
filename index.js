@@ -92,14 +92,14 @@ function getIssueNumsFromIssueNums(issueNums, set) {
 /// Part 2: Logic Handler Functions ///
 ///////////////////////////////////////
 
-function issueFunction(issueNums) {
+async function issueFunction(issueNums) {
   for (const issueNum of issueNums) {
-    const result = query({
+    const result = await octokit.graphql(query({
       owner: owner,
       repo: repo,
       issue_number: issueNum,
       since: cutOffTimeStale
-    })
+    }));
 
     const issueLabels = result.repository.issue.labels.nodes.map(label => {
       return label.name
