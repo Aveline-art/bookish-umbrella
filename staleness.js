@@ -59,6 +59,7 @@ class Issue {
                     return false
                 }
             } else if (moment.constructor.name == 'AssignedMoment') {
+                console.log(this.number, moment.assignee, this.assignee)
                 if (moment.isAssigneeInList(this.assignees)) {
                     return false
                 }

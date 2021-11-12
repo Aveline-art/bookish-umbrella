@@ -108,8 +108,6 @@ async function issueFunction(issueNums) {
     const assignees = result.repository.issue.assignees.nodes.map(assignee => {
       return assignee.login
     })
-
-    console.log(issueNum, assignees)
     const timelineItems = result.repository.issue.timelineItems.nodes
     const timelineAnalysis = inputs.staleDays ? staleness.analyze({
       issue_number: issueNum,

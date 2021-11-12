@@ -8665,6 +8665,7 @@ class Issue {
                     return false
                 }
             } else if (moment.constructor.name == 'AssignedMoment') {
+                console.log(this.number, moment.assignee, this.assignee)
                 if (moment.isAssigneeInList(this.assignees)) {
                     return false
                 }
@@ -8992,8 +8993,6 @@ async function issueFunction(issueNums) {
     const assignees = result.repository.issue.assignees.nodes.map(assignee => {
       return assignee.login
     })
-
-    console.log(issueNum, assignees)
     const timelineItems = result.repository.issue.timelineItems.nodes
     const timelineAnalysis = inputs.staleDays ? staleness.analyze({
       issue_number: issueNum,
