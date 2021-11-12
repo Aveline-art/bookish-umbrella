@@ -45,7 +45,7 @@ class Issue {
     }
 
     isIssueStale() {
-        if (this.linkedNum) {
+        if (this.linkedNum || !this.assignees) {
             return false
         }
 
