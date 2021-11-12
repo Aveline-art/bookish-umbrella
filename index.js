@@ -94,7 +94,7 @@ function getIssueNumsFromIssueNums(issueNums, set) {
 
 async function issueFunction(issueNums) {
   for (const issueNum of issueNums) {
-    const result = await octokit.graphql(query({
+    const result = await octokit.graphql(queryIssue({
       owner: owner,
       repo: repo,
       issue_number: issueNum,
