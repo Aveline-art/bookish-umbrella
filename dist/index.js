@@ -8659,6 +8659,7 @@ class Issue {
         }
 
         for (const moment of this.moments) {
+            console.log(this.number, moment.constructor.name)
             if (moment.constructor.name == 'CommentMoment') {
                 if (moment.isCommentByAssignees(this.assignees)) {
                     return false
