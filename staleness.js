@@ -1,12 +1,15 @@
-// Imports
-
-// Globals
-
+/**
+ * Definition of Stale:
+ *  1. The issue has assignees
+ *  2. The issue was not recently assigned
+ *  3. The issue was not recently linked with a pull request
+ *  4. The issue was not commented recently by the assignees
+ */
 
 // main function
 /**
  * 
- * @param {obj} data A key-value pair of various information, including issueNumber and timelineItems
+ * @param {obj} data A key-value pair of various information, including issueNumber and recent timelineItems (as determined by a cutoff)
  * @returns whether or not an issue is stale
  */
 function analyze(data) {
