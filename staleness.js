@@ -13,7 +13,6 @@
  * @returns whether or not an issue is stale
  */
 function analyze(data) {
-    console.log('from data', data.assignees)
     const issue = new Issue(data.issue_number)
     issue.addAssignee(data.assignees)
     for (const moment of data.timelineItems) {
@@ -41,8 +40,7 @@ class Issue {
     }
 
     addAssignee(assignees) {
-        console.log('from func', assignees)
-        this.assignees.concat(assignees)
+        this.assignees = this.assignees.concat(assignees)
     }
 
     addMoment(moment) {
