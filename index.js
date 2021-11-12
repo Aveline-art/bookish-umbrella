@@ -19,7 +19,6 @@ const inputs = {
   all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   staleDays: parseInt(core.getInput('stale-days')), // an integer or NaN 
-  staleByAssignee: core.getInput('stale-by-assignee') === 'true', // will be True if the string is 'true', else False
 }
 
 console.log(inputs)
