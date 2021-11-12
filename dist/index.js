@@ -8823,7 +8823,7 @@ const eventFunction = eventFunctions[github.context.eventName]
 const owner = payload.repository.owner.login
 const repo = payload.repository.name
 const cutOffTimeStale = new Date()
-cutOffTimeStale.setDate(cutOffTimeStale.getDate() - staleDays) 
+cutOffTimeStale.setDate(cutOffTimeStale.getDate() - inputs.staleDays) 
 
 // main call
 async function main() {
