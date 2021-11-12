@@ -13,7 +13,6 @@
  * @returns whether or not an issue is stale
  */
 function analyze(data) {
-    console.log('from data', data.issue_number, data.assignees)
     const issue = new Issue(data.issue_number)
     issue.addAssignee(data.assignees)
     for (const moment of data.timelineItems) {

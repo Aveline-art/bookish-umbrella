@@ -106,8 +106,11 @@ async function issueFunction(issueNums) {
     const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, issueLabels) : true
 
     const assignees = result.repository.issue.assignees.nodes.map(assignee => {
+      console.log('from assignee', assignee)
       return assignee.login
     })
+    
+    console.log('from assignees', assignees)
     const timelineItems = result.repository.issue.timelineItems.nodes
     const timelineAnalysis = inputs.staleDays ? staleness.analyze({
       issue_number: issueNum,
