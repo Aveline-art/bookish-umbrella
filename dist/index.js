@@ -8633,7 +8633,7 @@ class Issue {
     }
 
     isIssueStale() {
-        if (this.linkedNum || !this.assignees) {
+        if (this.linkedNum || !this.assignees.length) {
             return false
         }
 
