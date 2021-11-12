@@ -106,8 +106,15 @@ async function issueFunction(issueNums) {
     })
     const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, issueLabels) : true
 
+    const assignees = result.repository.issue.assignees.nodes.map(assignee => {
+      return assignee.login
+    })
     const timelineItems = result.repository.issue.timelineItems.nodes
-    const timelineAnalysis = inputs.staleDays ? staleness.analyze(issueNum, timelineItems, cutOffTimeStale) : true
+    const timelineAnalysis = inputs.staleDays ? staleness.analyze({
+      issue_number: issueNum,
+      assignees: assignees,
+      timelineItems: timelineItems,
+    }) : true
 
     if (labelAnalysis && timelineAnalysis) {
       postComment(issueNum)
@@ -129,8 +136,15 @@ async function prFunction(prNums) {
     })
     const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, prLabels) : true
 
+    const assignees = result.repository.pullRequest.assignees.nodes.map(assignee => {
+      return assignee.login
+    })
     const timelineItems = result.repository.pullRequest.timelineItems.nodes
-    const timelineAnalysis = inputs.staleDays ? staleness.analyze(prNum, timelineItems, cutOffTimeStale) : true
+    const timelineAnalysis = inputs.staleDays ? staleness.analyze({
+      issue_number: prNum,
+      assignees: assignees,
+      timelineItems: timelineItems,
+    }) : true
 
     if (labelAnalysis && timelineAnalysis) {
       postComment(prNum)

@@ -1,12 +1,9 @@
 
 node_modules/
-note.txt
 *.bat
 test.js
 apicalls.py
 test.py
-issueobj.json
 .gitignore
-probj.json
 test2.js
-graphql.json
+jsonreferences/
