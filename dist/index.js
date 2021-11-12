@@ -8664,7 +8664,6 @@ class Issue {
                     return false
                 }
             } else if (moment.constructor.name == 'AssignedMoment') {
-                console.log('the truth???', moment.assignee, this.assignees)
                 if (moment.isAssigneeInList(this.assignees)) {
                     return false
                 }
@@ -8998,8 +8997,6 @@ async function issueFunction(issueNums) {
       assignees: assignees,
       timelineItems: timelineItems,
     }) : true
-
-    console.log(issueNum, timelineAnalysis)
 
     if (labelAnalysis && timelineAnalysis) {
       postComment(issueNum)
