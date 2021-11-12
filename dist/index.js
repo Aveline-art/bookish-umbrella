@@ -8273,6 +8273,61 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 5930:
+/***/ ((module) => {
+
+function query(data) {
+  const queryVariables = `{
+    repository(owner: "${data.owner}", name: "${data.repo}") {
+      issue(number: ${data.issue_number}) {
+        assignees(first:10) {
+          nodes {
+            login
+          }
+        }
+        labels {
+          nodes {
+            name
+          }
+        }
+        number
+        createdAt
+        timelineItems(since: "${data.since}", last: 100) {
+          nodes {
+            __typename
+            ... on CrossReferencedEvent {
+              createdAt
+              source {
+                ... on PullRequest {
+                  author {
+                    login
+                  }
+                  number
+                  createdAt
+                }
+              }
+              willCloseTarget
+            }
+            ... on Comment {
+              createdAt
+              author {
+                login
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `
+
+  return queryVariables
+}
+
+module.exports = { query }
+
+/***/ }),
+
 /***/ 2386:
 /***/ ((module) => {
 
@@ -8481,22 +8536,21 @@ module.exports = { analyze, Analyzer, Interpreter }
 
 
 // main function
-function analyze(issueNum, cutoffString) {
+function analyze(issueNum, timeline, cutoffString) {
     const issue = new Issue(issueNum)
-    // TODO
-    const result = query()
+
 }
 
 class Issue {
-    constructor(number, assignees=[], moments=[], linkedNum=null) {
+    constructor(number, assignees = [], moments = [], linkedNum = null) {
         this.number = number
         this.assignees = assignees
         this.moments = moments
         this.linkedNum = linkedNum
     }
 
-    addAssignee(assignee) {
-        this.assignees.push(assignee)
+    addAssignee(...assignees) {
+        this.assignees.push(assignees)
     }
 
     addMoment(moment) {
@@ -8530,56 +8584,34 @@ class CommentMoment extends (/* unused pure expression or super */ null && (Mome
 }
 
 
-`
-{
-    repository(owner: "Aveline-art", name: "bookish-umbrella") {
-      issue(number: 112) {
-        number
-        assignees(first: 10) {
-          nodes {
-            login
-          }
-        }
-        timelineItems(since: "2021-11-08T23:22:00.804Z" last:100) {
-          nodes {
-            ... on IssueComment {
-              author {
-                login
-              }
-              createdAt
-            }
-            ... on CrossReferencedEvent {
-              createdAt 
-              source {
-                ... on PullRequest {
-                  author {
-                    login
-                  }
-                  number
-                }
-                ... on Issue {
-                  author {
-                    login
-                  }
-                  number
-                }
-              }
-              willCloseTarget
-            }
-          }
-        }
-      }
-    }
-}  
-`
+/**
+ * Generator that returns the timeline of an issue.
+ * @param {Number} issueNum the issue's number 
+ * @returns an Array of Objects containing the issue's timeline of events
+ */
+async function* getTimeline(issueNum) {
+    let page = 1
+    while (page < 100) {
+        try {
+            const results = await octokit.rest.issues.listEventsForTimeline({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNum,
+                per_page: 100,
+                page: page,
+            });
 
-function isMomentRecent(dateString, cutoffString) {
-    const dateStringObj = new Date(dateString);
-
-    if (dateStringObj >= cutoffString) {
-        return true
-    } else {
-        return false
+            if (results.data.length) {
+                yield* results.data
+            } else {
+                return
+            }
+        } catch {
+            continue
+        }
+        finally {
+            page++
+        }
     }
 }
 
@@ -8757,6 +8789,7 @@ var __webpack_exports__ = {};
 // Imports
 const core = __nccwpck_require__(4550);
 const github = __nccwpck_require__(1805);
+const { query } = __nccwpck_require__(5930);
 const repl = __nccwpck_require__(2386);
 const staleness = __nccwpck_require__(2851)
 
@@ -8774,7 +8807,7 @@ const inputs = {
   all: core.getInput('all') === 'true', // will be True if the string is 'true', else False
   labelString: core.getInput('label-string'), // a string that can be analyzed by repl
   staleDays: parseInt(core.getInput('stale-days')), // an integer or NaN 
-  staleByAssignee: core.getInput('stale-by-assignee'), // a string
+  staleByAssignee: core.getInput('stale-by-assignee') === 'true', // will be True if the string is 'true', else False
 }
 
 console.log(inputs)
@@ -8787,6 +8820,10 @@ const eventFunctions = {
 const octokit = github.getOctokit(inputs.myToken)
 const payload = github.context.payload
 const eventFunction = eventFunctions[github.context.eventName]
+const owner = payload.repository.owner.login
+const repo = payload.repository.name
+const cutOffTimeStale = new Date()
+cutOffTimeStale.setDate(cutOffTimeStale.getDate() - staleDays) 
 
 // main call
 async function main() {
@@ -8843,27 +8880,43 @@ function getIssueNumsFromIssueNums(issueNums, set) {
 /// Part 2: Logic Handler Functions ///
 ///////////////////////////////////////
 
-function issueFunction(issueNumbers) {
-  const issueLabels = payload.issue.labels.map(label => {
-    return label.name
-  })
-  // needs to do something when all is false but there are no assignees, only labelString, aka, assume true unless there is an input to analyze
-  if (inputs.all || repl.analyze(inputs.labelString, issueLabels)) {
-    for (const num of issueNumbers) {
+function issueFunction(issueNums) {
+  for (const issueNum of issueNums) {
+    const result = query({
+      owner: owner,
+      repo: repo,
+      issue_number: issueNum,
+      since: cutOffTimeStale
+    })
+
+    const issueLabels = result.repository.issue.labels.nodes.map(label => {
+      return label.name
+    })
+    const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, issueLabels) : true
+  
+    const timelineItems = result.repository.issue.timelineItems.nodes
+    const timelineAnalysis = inputs.staleDays ? staleness.analyze(issueNum, timelineItems, cutOffTimeStale) : true
+
+    if (labelAnalysis && timelineAnalysis) {
       postComment(num)
     }
   }
 }
 
-function prFunction(issueNumbers) {
+function prFunction(issueNums) {
+  /*
   const prLabels = payload.pull_request.labels.map(label => {
     return label.name
   })
+
+  const labelAnalysis = inputs.labelString? repl.analyze(inputs.labelString, prLabels) : true
+
   if (inputs.all || repl.analyze(inputs.labelString, prLabels)) {
-    for (const num of issueNumbers) {
+    for (const num of issueNums) {
       postComment(num)
     }
   }
+  */
 }
 
 /////////////////
@@ -8903,12 +8956,12 @@ async function* getIssueNumsFromColumn(columnId) {
   }
 }
 
-function postComment(issueNumber) {
+function postComment(issueNum) {
   try {
     octokit.rest.issues.createComment({
-      owner: payload.repository.owner.login,
-      repo: payload.repository.name,
-      issue_number: issueNumber,
+      owner: owner,
+      repo: repo,
+      issue_number: issueNum,
       body: inputs.message,
     });
   } catch (error) {
@@ -8939,58 +8992,7 @@ function parseStringToNums(string, delimiter = ', ') {
   }
 }
 
-async function test(query) {
-  const result = await octokit.graphql(query);
-  console.log(JSON.stringify(result))
-}
-
-const query = 
-`
-{
-    repository(owner: "Aveline-art", name: "bookish-umbrella") {
-      issue(number: 112) {
-        number
-        assignees(first: 10) {
-          nodes {
-            login
-          }
-        }
-        timelineItems(since: "2021-11-08T23:22:00.804Z" last:100) {
-          nodes {
-            ... on IssueComment {
-              author {
-                login
-              }
-              createdAt
-            }
-            ... on CrossReferencedEvent {
-              createdAt 
-              source {
-                ... on PullRequest {
-                  author {
-                    login
-                  }
-                  number
-                }
-                ... on Issue {
-                  author {
-                    login
-                  }
-                  number
-                }
-              }
-              willCloseTarget
-            }
-          }
-        }
-      }
-    }
-}  
-`
-
-test(query)
-
-//main()
+main()
 })();
 
 module.exports = __webpack_exports__;
