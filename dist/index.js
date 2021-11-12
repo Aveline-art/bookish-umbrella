@@ -8699,7 +8699,7 @@ class AssignedMoment extends Moment {
     }
 
     isAssigneeInList(assigneeList) {
-        assigneeList.includes(this.assignee)
+        return assigneeList.includes(this.assignee)
     }
 }
 
