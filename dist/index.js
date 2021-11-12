@@ -8620,7 +8620,7 @@ module.exports = { analyze, Analyzer, Interpreter }
  */
 function analyze(data) {
     const issue = new Issue(data.issue_number)
-    issue.addAssignee(...data.assignees)
+    issue.addAssignee(data.assignees)
     for (const moment of data.timelineItems) {
         const type = moment.__typename
         if (type == 'IssueComment') {
