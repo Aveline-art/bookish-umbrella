@@ -8887,7 +8887,7 @@ async function issueFunction(issueNums) {
       owner: owner,
       repo: repo,
       issue_number: issueNum,
-      since: cutOffTimeStale
+      since: cutOffTimeStale.toISOString()
     }));
 
     const issueLabels = result.repository.issue.labels.nodes.map(label => {
