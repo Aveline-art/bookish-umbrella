@@ -17,7 +17,6 @@ function analyze(data) {
     issue.addAssignee(...data.assignees)
     for (const moment of data.timelineItems) {
         const type = moment.__typename
-        console.log(moment)
         if (type == 'IssueComment') {
             const commentMoment = new CommentMoment(moment.createdAt, moment.author.login)
             issue.addMoment(commentMoment)

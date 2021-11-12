@@ -8623,7 +8623,6 @@ function analyze(data) {
     issue.addAssignee(...data.assignees)
     for (const moment of data.timelineItems) {
         const type = moment.__typename
-        console.log(moment)
         if (type == 'IssueComment') {
             const commentMoment = new CommentMoment(moment.createdAt, moment.author.login)
             issue.addMoment(commentMoment)
@@ -8930,6 +8929,8 @@ async function main() {
     getIssueNumsFromIssueNums(inputs.issueNumbers, issueNumSet)
 
     const issueNumArr = Array.from(issueNumSet)
+
+    console.log(issueNumArr)
 
     // Part 2: Logic Handler Functions
     if (issueNumArr.length > 0) {
