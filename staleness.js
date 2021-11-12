@@ -13,6 +13,7 @@
  * @returns whether or not an issue is stale
  */
 function analyze(data) {
+    console.log(data)
     const issue = new Issue(data.issue_number)
     issue.addAssignee(data.assignees)
     for (const moment of data.timelineItems) {
@@ -48,7 +49,6 @@ class Issue {
     }
 
     isIssueStale() {
-        console.log(this.number, this.assignees)
         if (this.linkedNum || !this.assignees.length) {
             return false
         }

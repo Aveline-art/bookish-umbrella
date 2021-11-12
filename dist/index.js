@@ -8619,6 +8619,7 @@ module.exports = { analyze, Analyzer, Interpreter }
  * @returns whether or not an issue is stale
  */
 function analyze(data) {
+    console.log(data)
     const issue = new Issue(data.issue_number)
     issue.addAssignee(data.assignees)
     for (const moment of data.timelineItems) {
@@ -8654,7 +8655,6 @@ class Issue {
     }
 
     isIssueStale() {
-        console.log(this.number, this.assignees)
         if (this.linkedNum || !this.assignees.length) {
             return false
         }
@@ -8990,11 +8990,8 @@ async function issueFunction(issueNums) {
     const labelAnalysis = inputs.labelString ? repl.analyze(inputs.labelString, issueLabels) : true
 
     const assignees = result.repository.issue.assignees.nodes.map(assignee => {
-      console.log('from assignee', assignee)
       return assignee.login
     })
-    
-    console.log('from assignees', assignees)
     const timelineItems = result.repository.issue.timelineItems.nodes
     const timelineAnalysis = inputs.staleDays ? staleness.analyze({
       issue_number: issueNum,
