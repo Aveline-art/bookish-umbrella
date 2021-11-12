@@ -8881,6 +8881,7 @@ function getIssueNumsFromIssueNums(issueNums, set) {
 ///////////////////////////////////////
 
 async function issueFunction(issueNums) {
+  console.log(cutOffTimeStale)
   for (const issueNum of issueNums) {
     const result = await octokit.graphql(query({
       owner: owner,

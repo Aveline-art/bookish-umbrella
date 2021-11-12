@@ -28,6 +28,7 @@ inputs:
   stale-days:
     description: 'Number of days of inactivity to post a comment'
     required: false
+    default: 0
   stale-by-assignee: # requires stale-days
     description: 'If the assignee left an issue stale, post a comment'
     required: false
