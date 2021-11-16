@@ -13,7 +13,7 @@ jobs:
         uses: Aveline-art/bookish-umbrella@main
         with:
           # required
-          message: 'This is a pr message'
+          message: 'PATH ./text.md'
           myToken: ${{ secrets.GITHUB_TOKEN }}
           # targets
           issue-numbers: ${{ github.event.pull_request.number }}

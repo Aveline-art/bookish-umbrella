@@ -4,11 +4,12 @@ const github = require('@actions/github');
 const { queryIssue, queryPr } = require('./query');
 const repl = require('./repl');
 const staleness = require('./staleness')
+const fs = require('fs')
 
 // Globals
 const inputs = {
   // Required
-  message: core.getInput('message'), // a string containing the message to comment
+  message: parseMessage(core.getInput('message')), // a string containing the message to comment
   myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
 
   // Targets
@@ -221,6 +222,16 @@ function parseStringToNums(string, delimiter = ', ') {
     return results
   } else {
     return null
+  }
+}
+
+function parseMessage(string) {
+  if (string.substring(0, 4) == 'PATH') {
+    const path = string.substring(4).trim()
+    const file = fs.readFile(path, 'utf8')
+    return file
+  } else {
+    return string
   }
 }
 

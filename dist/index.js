@@ -8887,11 +8887,12 @@ const github = __nccwpck_require__(1805);
 const { queryIssue, queryPr } = __nccwpck_require__(5930);
 const repl = __nccwpck_require__(2386);
 const staleness = __nccwpck_require__(2851)
+const fs = __nccwpck_require__(5747)
 
 // Globals
 const inputs = {
   // Required
-  message: core.getInput('message'), // a string containing the message to comment
+  message: parseMessage(core.getInput('message')), // a string containing the message to comment
   myToken: core.getInput('myToken'), // a string containing the token, used only to verify octokit
 
   // Targets
@@ -9104,6 +9105,16 @@ function parseStringToNums(string, delimiter = ', ') {
     return results
   } else {
     return null
+  }
+}
+
+function parseMessage(string) {
+  if (string.substring(0, 4) == 'PATH') {
+    const path = string.substring(4).trim()
+    const file = fs.readFile(path, 'utf8')
+    return file
+  } else {
+    return string
   }
 }
 
