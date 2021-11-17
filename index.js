@@ -235,6 +235,7 @@ function parseMessage(string) {
       console.log(data)
     })
     */
+   return string
   } else {
     return string
   }
