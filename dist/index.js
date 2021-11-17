@@ -9112,6 +9112,7 @@ function parseMessage(string) {
   if (string.substring(0, 4) == 'PATH') {
     const path = string.substring(4).trim()
     console.log(path)
+    console.log('Current directory: ' + process.cwd());
     fs.readFile(path, 'utf8', data => {
       console.log(data)
     })
