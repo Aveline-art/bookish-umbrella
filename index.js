@@ -228,7 +228,9 @@ function parseStringToNums(string, delimiter = ', ') {
 function parseMessage(string) {
   if (string.substring(0, 4) == 'PATH') {
     const path = string.substring(4).trim()
-    const file = fs.readFile(path)
+    console.log(path)
+    console.log(fs)
+    const file = fs.readFile(path, 'utf8')
     return file
   } else {
     return string
