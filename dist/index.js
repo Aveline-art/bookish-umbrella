@@ -9118,9 +9118,11 @@ function parseMessage(string) {
         console.log(file);
       });
     });
+    /*
     fs.readFile(path, 'utf8', data => {
       console.log(data)
     })
+    */
   } else {
     return string
   }
