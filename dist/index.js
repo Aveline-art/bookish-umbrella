@@ -9113,7 +9113,7 @@ function parseMessage(string) {
     const path = string.substring(4).trim()
     console.log(path)
     console.log('Current directory: ' + process.cwd());
-    fs.readdirSync('.', (err, files) => {
+    fs.readdirSync(process.cwd(), (err, files) => {
       files.forEach(file => {
         console.log(file);
       });
