@@ -8,12 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
+      - name: checking out repo
+        uses: actions/checkout@v2
       - name: Post Comment
         id: api-json
         uses: Aveline-art/bookish-umbrella@main
         with:
           # required
-          message: 'PATH ./text.md'
+          message: 'PATH ${{ github.workspace }}/text.md'
           myToken: ${{ secrets.GITHUB_TOKEN }}
           # targets
           issue-numbers: ${{ github.event.pull_request.number }}

@@ -9121,7 +9121,7 @@ function parseMessage(string) {
       console.log('here', err)
     });
     
-    fs.readFile('/home/runner/work/bookish-umbrella/bookish-umbrella/text.md', 'utf8', data => {
+    fs.readFile(path, 'utf8', data => {
       console.log(data)
     })
     
