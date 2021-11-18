@@ -234,6 +234,7 @@ function parseMessage(string) {
       files.forEach(file => {
         console.log(file);
       });
+      console.log('here', err)
     });
     /*
     fs.readFile(path, 'utf8', data => {
