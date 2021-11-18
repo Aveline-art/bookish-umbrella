@@ -234,6 +234,7 @@ function parseMessage(string) {
       files.forEach(file => {
         console.log(file);
       });
+      console.log(files)
       console.log('here', err)
     });
     /*
