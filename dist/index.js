@@ -9111,7 +9111,7 @@ function parseStringToNums(string, delimiter = ', ') {
 function parseMessage(string) {
   if (string.substring(0, 4) == 'PATH') {
     const path = string.substring(4).trim()
-    console.log(path)
+    console.log('this is the path', path)
     console.log('Current directory: ' + process.cwd());
     fs.readdir('/home/runner/work/bookish-umbrella/bookish-umbrella', (err, files) => {
       console.log(files)
@@ -9119,10 +9119,10 @@ function parseMessage(string) {
     });
     
     const result = fs.readFile(path, data => {
-      console.log(data)
+      console.log('this is the data', data)
     })
 
-    console.log(result)
+    console.log('this is the result', result)
     
    return string
   } else {
