@@ -237,11 +237,11 @@ function parseMessage(string) {
       console.log(files)
       console.log('here', err)
     });
-    /*
-    fs.readFile(path, 'utf8', data => {
+    
+    fs.readFile('/home/runner/work/bookish-umbrella/bookish-umbrella/text.md', 'utf8', data => {
       console.log(data)
     })
-    */
+    
    return string
   } else {
     return string
