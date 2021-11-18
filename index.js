@@ -230,7 +230,7 @@ function parseMessage(string) {
     const path = string.substring(4).trim()
     console.log(path)
     console.log('Current directory: ' + process.cwd());
-    fs.readdir('./', (err, files) => {
+    fs.readdir(process.cwd(), (err, files) => {
       files.forEach(file => {
         console.log(file);
       });
