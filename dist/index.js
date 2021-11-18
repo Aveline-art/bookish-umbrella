@@ -9114,16 +9114,15 @@ function parseMessage(string) {
     console.log(path)
     console.log('Current directory: ' + process.cwd());
     fs.readdir('/home/runner/work/bookish-umbrella/bookish-umbrella', (err, files) => {
-      files.forEach(file => {
-        console.log(file);
-      });
       console.log(files)
       console.log('here', err)
     });
     
-    fs.readFile(path, 'utf8', data => {
+    const result = fs.readFile(path, data => {
       console.log(data)
     })
+
+    console.log(result)
     
    return string
   } else {
