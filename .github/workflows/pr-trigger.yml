@@ -17,6 +17,12 @@ jobs:
           # required
           message: 'PATH ./text.md'
           myToken: ${{ secrets.GITHUB_TOKEN }}
+          # message edits
+          message-placeholders: |
+            {
+              "greeting": "hello world",
+              "name": "octokit"
+            }
           # targets
           issue-numbers: ${{ github.event.pull_request.number }}
           # filters
