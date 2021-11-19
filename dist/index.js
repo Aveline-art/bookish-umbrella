@@ -9118,9 +9118,12 @@ function parseMessage(string) {
   }
 
   const placeholders = parsePlaceholder(core.getInput('message-placeholders'))
-  for (const [key, val] of Object.entries(placeholders)) {
-    const regex = new RegExp(`{${key}}`, 'g')
-    message = message.replace(regex, val)
+
+  if (placeholders) {
+    for (const [key, val] of Object.entries(placeholders)) {
+      const regex = new RegExp(`{${key}}`, 'g')
+      message = message.replace(regex, val)
+    }
   }
 
   return message
