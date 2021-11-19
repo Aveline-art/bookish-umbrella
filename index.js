@@ -225,12 +225,11 @@ function parseStringToNums(string, delimiter = ', ') {
   }
 }
 
-function parseMessage(string) {
+async function parseMessage(string) {
   if (string.substring(0, 4) == 'PATH') {
     const path = string.substring(4).trim()
-    console.log('this is the path', path)
-    
-    const result = fs.readFile(path, 'utf8', (err, data) => {
+    fs.readFile(path, 'utf8', (err, data) => {
+      console.log(data)
       return data
     })
   } else {
