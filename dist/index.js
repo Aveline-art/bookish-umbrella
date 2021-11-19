@@ -9111,10 +9111,7 @@ function parseStringToNums(string, delimiter = ', ') {
 async function parseMessage(string) {
   if (string.substring(0, 4) == 'PATH') {
     const path = string.substring(4).trim()
-    fs.readFile(path, 'utf8', (err, data) => {
-      console.log(data)
-      return data
-    })
+    return fs.readFileSync(path, 'utf8')
   } else {
     return string
   }
