@@ -9117,7 +9117,7 @@ function parseMessage(string) {
       console.log(files)
     });
     
-    const result = fs.readFile(path, 'utf8', data => {
+    const result = fs.readFile(path, 'utf8', (err, data) => {
       console.log('this is the data', data)
     })
 
