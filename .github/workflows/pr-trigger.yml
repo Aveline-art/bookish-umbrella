@@ -15,7 +15,7 @@ jobs:
         uses: Aveline-art/bookish-umbrella@main
         with:
           # required
-          message: 'PATH ${{ github.workspace }}/text.txt'
+          message: 'PATH ./text.md'
           myToken: ${{ secrets.GITHUB_TOKEN }}
           # targets
           issue-numbers: ${{ github.event.pull_request.number }}
