@@ -9115,10 +9115,9 @@ function parseMessage(string) {
     console.log('Current directory: ' + process.cwd());
     fs.readdir('/home/runner/work/bookish-umbrella/bookish-umbrella', (err, files) => {
       console.log(files)
-      console.log('here', err)
     });
     
-    const result = fs.readFile(path, data => {
+    const result = fs.readFile(path, 'utf8', data => {
       console.log('this is the data', data)
     })
 
