@@ -9,6 +9,11 @@ inputs:
     description: 'A valid API token scoped to post comments on the repo'
     required: true
   
+  # Ways to manipulate the message
+  message-placeholders:
+    description: 'Replaces placeholders with variables'
+    required: false
+
   # Ways to get an issue number, at least one is required
   columns: # Comma separated list of numbers
     description: 'Get all issues from the indicated columns'

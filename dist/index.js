@@ -9109,11 +9109,33 @@ function parseStringToNums(string, delimiter = ', ') {
 }
 
 function parseMessage(string) {
+  var message;
   if (string.substring(0, 4) == 'PATH') {
-      const path = string.substring(4).trim()
-      return fs.readFileSync(path, 'utf8')
+    const path = string.substring(4).trim()
+    message = fs.readFileSync(path, 'utf8')
   } else {
-      return string
+    message = string
+  }
+
+  const placeholders = parsePlaceholder(core.getInput('message-placeholders'))
+  for (const [key, val] of Object.entries(placeholders)) {
+    const regex = new RegExp(`{${key}}`, 'g')
+    message = message.replace(regex, val)
+  }
+
+  return message
+}
+
+function parsePlaceholder(string) {
+  if (string) {
+    try {
+      return JSON.parse(string)
+    } catch (error) {
+      core.setFailed(error.message);
+      core.setFailed('Could not read placeholders')
+    }
+  } else {
+    return null
   }
 }
 
